@@ -1,0 +1,20 @@
+{
+  "name": "training-module-server",
+  "version": "1.0.0",
+  "description": "A dynamic, browser-based visualization library.",
+  "license": "(Apache-2.0 OR MIT)",
+  "keywords": [
+
+  ],
+  "scripts": {
+    "start" : "node app"
+  },
+  "dependencies": {
+    "mongodb": "2.2.21",
+    "express": "4.14.0",
+    "body-parser": "1.14.2"
+  },
+  "devDependencies": {
+
+  }
+}
