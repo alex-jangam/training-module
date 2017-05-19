@@ -1,7 +1,11 @@
-//models\schema\users.js
 
-// var mongoose = require('mongoose');
-// var Schema = mongoose.Schema;
+/**
+  * Courses are sub catogories,
+  * EX: HTML is part of UI. So Courses are requested for admin permissions by users
+  * A Default Course with blank USER is always created, and a course object for each user who registers and admin requests.
+  * Once registered, user can request for admin permissions which will make role as admin and approved false.
+  * User will have one course object with role user with username. This helps in identifying permissions to the course.
+**/
 var utils = require("../plugins/utils");
 var cnst = require("../config");
 var mongConn = require('./connection');
@@ -10,15 +14,18 @@ var Schema = mongConn.Schema;
 
 var schema = new Schema({
     "name": String,//Display name for course like HTML, JS , Java, Spring
-    "code": String //Catogory code which is auto generated
-    "catogory": String,//Catogory under which it comes up like UI, Server etc
+    "code": String //category code which is auto generated
+    "category": String,//category under which it comes up like UI, Server etc
     "suffix": String,//Suffix to be dsplayed for items under it
     // "count": {type : Number , default : 0},//Count of total items under this course. -get from topic collection
     // "rcount": {type : Number , default : 0},//Count of registered items under this course.- get from topic collection
+    "approved": Boolean,//to be approved by superadmin for permission as admin.
     "user": String,//Username of user who accesses the course
+    "role": String //role of registered
 }, {versionKey: false,  timestamps :{ createdAt: 'created', updatedAt: 'lastUpdated'}});
 
 schema.index({ code: 1, user: 1}, { unique: true });
+
 schema.set('toJSON', {
     transform: function(doc, ret, options) {
         delete ret._id;
@@ -27,7 +34,7 @@ schema.set('toJSON', {
     }
 });
 var collection = 'courses';
-var paginate = 10, defKeys = ["name", "code", "catogory", "count", "suffix", "created","lastUpdated"],
+var paginate = 10, defKeys = ["name", "code", "category", "count", "suffix", "created","lastUpdated"],
 sortItem = {item:"count", order:1};
 
 schema.methods.findByName = function(name){
@@ -80,10 +87,10 @@ schema.methods.updateOne = function(usr){
 var lschame = mongooseClient.model(collection, schema);
 
 module.exports.query = new user();// Export the whole 'schema' with all the methods
-module.exports.add = function(name, catogory, suffix){// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function(name, category, suffix){// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
   var newProm = utils.getpromise(), userOb = {
     "name": name,
-    "catogory": catogory,
+    "category": category,
     "suffix": suffix,
     "count": 0
   };

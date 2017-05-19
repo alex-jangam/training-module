@@ -1,7 +1,12 @@
-//models\schema\users.js
 
-// var mongoose = require('mongoose');
-// var Schema = mongoose.Schema;
+/**
+  * Topic are sub Courses,
+  * EX: HTML Basic is part of HTML. So admin permissions are copied from Courses
+  * A Default topic with blank USER is always created,
+  * a topic object for each user who registers and admin permission is copied from the parent with approval status.
+  * User will have one topic object with role user with username. This helps in identifying permissions to the topic.
+**/
+
 var utils = require("../plugins/utils");
 var cnst = require("../config");
 var mongConn = require('./connection');
@@ -17,6 +22,7 @@ var schema = new Schema({
     "user": String, //User name who has registered to the topic
     "approved": Boolean, //State of approval - To be approved by admin.
     "submitted": Boolean, // Submit is state of the topic, once submitted it goes for admin to review
+    "guides" : [String]//Add related links
     "role": String //role of the user
 }, {versionKey: false,  timestamps :{ createdAt: 'created', updatedAt: 'lastUpdated'}});
 
@@ -29,7 +35,7 @@ schema.set('toJSON', {
     }
 });
 var collection = 'topic';
-var paginate = 10, defKeys = ["name", "code", "course", "suffix", "count", "user", "approved", "submitted", "role",  "created", "lastUpdated"],
+var paginate = 10, defKeys = ["name", "code", "course", "suffix", "count", "user", "approved", "submitted", "guides", "role",  "created", "lastUpdated"],
 sortItem = {item:"count", order:1};
 
 schema.methods.findByName = function(name){
@@ -82,10 +88,10 @@ schema.methods.updateOne = function(usr){
 var lschame = mongooseClient.model(collection, schema);
 
 module.exports.query = new user();// Export the whole 'schema' with all the methods
-module.exports.add = function(name, catogory, suffix){// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function(name, category, suffix){// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
   var newProm = utils.getpromise(), userOb = {
     "name": name,
-    "catogory": catogory,
+    "category": category,
     "suffix": suffix,
     "count": 0
   };

@@ -1,5 +1,8 @@
 
 module.exports = {
 		users : require("./users"),
-		courses : require("./courses")
+		category : require("./category"),
+		courses : require("./courses"),
+		topic : require("./topic"),
+		questions : require("./questions"),
 }

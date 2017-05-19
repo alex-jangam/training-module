@@ -1,11 +1,7 @@
+//models\schema\users.js
 
-
-/**
-  * Questions come up under each topic.
-  * EX: Q1. Write down html snippet for sumbitable form in part of HTML Basic.
-  * Question edit permissions are verified from topic code and user role permissions, and no user data is saved.
-**/
-
+// var mongoose = require('mongoose');
+// var Schema = mongoose.Schema;
 var utils = require("../plugins/utils");
 var cnst = require("../config");
 var mongConn = require('./connection');
@@ -13,15 +9,12 @@ var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
 
 var schema = new Schema({
-    "question": String,//Your question goes here
-    "topic": String,//Topic code comes here
-    "course": String,//Course code comes here
-    "code" : String,//question code is auto generated
-    "submitted": Boolean,//is Submitted state?
-    "priority": Number,
-    "guides" : [String]//Add related links
+    "name": String,//Display name for course like HTML, JS , Java, Spring
+    "code": String //category code which is auto generated
+    "suffix": String,//Suffix to be dsplayed for items under it
 }, {versionKey: false,  timestamps :{ createdAt: 'created', updatedAt: 'lastUpdated'}});
 
+schema.index({ name: 1}, { unique: true });
 schema.set('toJSON', {
     transform: function(doc, ret, options) {
         delete ret._id;
@@ -29,16 +22,15 @@ schema.set('toJSON', {
         return ret;
     }
 });
-var collection = 'questions';
-var paginate = 10, defKeys = ["question", "code", "course", "topic", "submitted", "guides", "created", "lastUpdated"],
-sortItem = {item:"priority", order:1};
+var collection = 'category';
+var paginate = 10, defKeys = ["name", "code", "category", "count", "suffix", "created","lastUpdated"],
+sortItem = {item:"count", order:1};
 
 schema.methods.findByName = function(name){
   var newProm = utils.getpromise();
   this.model(collection).findOne({ username: utils.noCase(name) },newProm.post);
   return newProm.prom;
 }
-
 schema.methods.getCount = function(account){
   var newProm = utils.getpromise();
   var query = {"account.name":account};
@@ -51,6 +43,7 @@ schema.methods.findById = function(id){
   this.model(collection).findOne({ _id: id }, newProm.post);
   return newProm.prom;
 }
+
 
 schema.methods.findAll = function(page, count){
   var newProm = utils.getpromise();
