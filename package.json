@@ -10,11 +10,15 @@
     "start" : "node app"
   },
   "dependencies": {
-    "mongodb": "2.2.21",
     "express": "4.14.0",
-    "body-parser": "1.14.2"
+    "body-parser": "1.14.2",
+    "mongoose": "4.9.9",
+    "express-jwt": "5.3.0",
+    "jsonwebtoken": "7.4.1"
   },
   "devDependencies": {
-
+    "chai": "^3.5.0",
+    "chai-http": "^2.0.1",
+    "mocha": "2.4.5"
   }
 }

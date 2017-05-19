@@ -1,22 +1,24 @@
-var express = require('express');
-var app = express();
+/*globals require, module, console, exports */
 
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var url = 'mongodb://localhost:27017/ux';
+var express = require('express'),
+    app = express(),
+    assert = require('assert'),
+    config = require("./config");
+    url = 'mongodb://localhost:27017/ux',
+    logger = require("./plugins/logger"),
+    dao = require("./modules/dao"),
+    jwt = require('jsonwebtoken');
+
+
+    logger.enableHosts(config.local);
 // var url1 = 'mongodb://localhost:27017/storage';
 
+app.use(require("body-parser").json());
 require("./controller/setters")(app, express);
-
-MongoClient.connect(url, function (err, db) {
-  assert.equal(null, err);
-  console.log("Connected correctly to server.");
-
-  require("./controller/routes")(app);
-});
-
+app.use(require("./auth/authenticate"));
+require("./controller/users")(app, dao, config);
 
 
 app.listen(4000, function () {
-  console.log('app listening on port 4000...');
+    console.log('app listening on port 4000...');
 });
