@@ -11,9 +11,10 @@ module.exports = function (req, res, next) {
 				res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 				return res.status(200).send({});
 		}
-
 		if (config.excempt.includes(req.path)) {
 					next();
+		} else if (!token) {
+				res.status(emessage.wrongToken.status).send(emessage.wrongToken);
 		} else {
 				jwt.verify(token, config.secret, function (err, decoded) {
 					var emsg = err && err.message;

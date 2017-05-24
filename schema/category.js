@@ -2,12 +2,6 @@
 /*jslint node : true, nomen : true, unparam : true */
 "use strict";
 
-/**
-  * Questions come up under each topic.
-  * EX : Q1. Write down html snippet for sumbitable form in part of HTML Basic.
-  * Question edit permissions are verified from topic code and user role permissions, and no user data is saved.
-**/
-
 var utils = require("../plugins/utils");
 var cnst = require("../config");
 var mongConn = require('./connection');
@@ -15,19 +9,19 @@ var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
 
 var schema = new Schema({
-    "question" : String,//Your question goes here
-    "topic" : String,//Topic code comes here
-    "course" : String,//Course code comes here
-    "code" : String,//question code is auto generated
-    // "submitted" : Boolean,//is Submitted state?
-    "priority" : Number,//Order of questions
-    "guides" : [String]//Add related links
-}, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
+        "name" : String,//Display name for course like HTML, JS , Java, Spring
+        "code" : String, //category code which is auto generated
+        "suffix" : String,//Suffix to be dsplayed for items under it
+        "approved" : Boolean,
+        "user" : String// created user
+    }, {versionKey : false, timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
 
+schema.index({ name : 1}, { unique : true });
 
-var collection = 'questions';
-var paginate = 10, defKeys = ["question", "code", "course", "topic", "submitted", "guides", "created", "lastUpdated"],
-    sortItem = {item : "priority", order : 1};
+var collection = 'category',
+    paginate = 10,
+    defKeys = ["name", "code", "suffix", "approved", "created", "lastUpdated"],
+    sortItem = {item : "name", order : 1};
 
 schema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
@@ -35,8 +29,14 @@ schema.methods.findByName = function (name) {
     return newProm.prom;
 };
 
-schema.methods.getCount = function (topic) {
-    var newProm = utils.getpromise(), query = {"topic" : topic};
+schema.methods.findLatest = function () {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({}).sort({created : -1}).limit( 5 ).exec(newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.getCount = function (account) {
+    var newProm = utils.getpromise(), query = {"account.name" : account};
     this.model(collection).count(query, newProm.post);
     return newProm.prom;
 };
@@ -47,13 +47,13 @@ schema.methods.findById = function (id) {
     return newProm.prom;
 };
 
-schema.methods.findAll = function (page, count) {
+
+schema.methods.findAll = function (user, page, count) {
     var newProm = utils.getpromise(),
-        query = {approved : true},
+        query = {$or: [{approved : true}, {user : user}]},
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
-    // this.model(collection).find({"account.name" : company}, newProm.post);
     return newProm.prom;
 };
 
@@ -64,31 +64,22 @@ schema.methods.findAndRemove = function (username) {
     return newProm.prom;
 };
 
-schema.methods.updateOne = function (usr) {
-    var newProm = utils.getpromise(),
-        user = utils.clone(usr),
-        userFind = {"username" : usr.username};
-    this.model(collection).findOneAndUpdate(userFind, user, {new : true}, newProm.post);
-    return newProm.prom;
-};
-
 
 var SchemaModel = mongooseClient.model(collection, schema);
 
 module.exports.query = new SchemaModel();// Export the whole 'schema' with all the methods
-module.exports.add = function (question, topic, course, code, priority, guides) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function (name, category, suffix, user, approved) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var newProm = utils.getpromise(), ObModel = {
-        "question" : question,
-        "topic" : topic,
-        "course" : course,
-        "code" : code,
-        "priority" : priority,
-        "guides" : guides
+        "name" : name,
+        "code" : category,
+        "suffix" : suffix,
+        "approved" : approved,
+        "count" : 0,
+        "user" : user
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;
 };
-
 module.exports.update = function (data, callB) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var id = data._id;
     delete data._id;

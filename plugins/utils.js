@@ -344,11 +344,11 @@
        if(csort && (csort.item || Array.isArray(csort))){
          if (respkeys.includes(csort.item)) {
            sort.$sort['all.'+ csort.item]=csort.order;
-         } else if (Array.isArray(csort.item)) {
+         } else if (Array.isArray(csort)) {
            for (var i = 0; i < csort.length; i++) {
              var oneItem = csort[i].item;
              if (respkeys.includes(oneItem)){
-               sort.$sort = ['all.'+ oneItem] = csort[i].order;
+               sort.$sort['all.'+ oneItem] = csort[i].order;
              }
            }
          }
@@ -356,7 +356,7 @@
            retOb.push(sort);
          }
        }
-       
+
        if(page && limit){//limit to paginate number of elements.
          retOb.push({ $skip : (page-1)*limit });
          retOb.push({ $limit: limit });

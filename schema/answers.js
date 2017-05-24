@@ -15,29 +15,23 @@ var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
 
 var schema = new Schema({
-    "question" : String,//Your question goes here
-    "topic" : String,//Topic code comes here
-    "course" : String,//Course code comes here
-    "code" : String,//question code is auto generated
-    // "submitted" : Boolean,//is Submitted state?
-    "priority" : Number,//Order of questions
-    "guides" : [String]//Add related links
+    "question" : String,//Question code for which its tagged
+    "submitted" : Boolean,//is Submitted state? It can be in saved or submitted.
+    "user" : String,//User who submitted the answer
+    "role" : String, //Role of user who submitted the answer.
+    "answer" : String,//Answer to the question goes here.
+    "approved" : Boolean //Pending(submitted but yet to review) or accepted(Answer was accepted)
 }, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
 
+schema.index({ question : 1, user : 1}, { unique : true });//One answer for question for user.
 
-var collection = 'questions';
-var paginate = 10, defKeys = ["question", "code", "course", "topic", "submitted", "guides", "created", "lastUpdated"],
+var collection = 'answers';
+var paginate = 10, defKeys = ["question", "submitted",  "user", "role", "answer", "approved", "created", "lastUpdated"],
     sortItem = {item : "priority", order : 1};
 
 schema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
     this.model(collection).findOne({ username : utils.noCase(name)}, newProm.post);
-    return newProm.prom;
-};
-
-schema.methods.getCount = function (topic) {
-    var newProm = utils.getpromise(), query = {"topic" : topic};
-    this.model(collection).count(query, newProm.post);
     return newProm.prom;
 };
 
@@ -53,7 +47,6 @@ schema.methods.findAll = function (page, count) {
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
-    // this.model(collection).find({"account.name" : company}, newProm.post);
     return newProm.prom;
 };
 
@@ -76,14 +69,14 @@ schema.methods.updateOne = function (usr) {
 var SchemaModel = mongooseClient.model(collection, schema);
 
 module.exports.query = new SchemaModel();// Export the whole 'schema' with all the methods
-module.exports.add = function (question, topic, course, code, priority, guides) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function (question, answer, user, role, submitted) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var newProm = utils.getpromise(), ObModel = {
         "question" : question,
-        "topic" : topic,
-        "course" : course,
-        "code" : code,
-        "priority" : priority,
-        "guides" : guides
+        "answer" : answer,//Answer to the question goes here.
+        "user" : user,//User who submitted the answer
+        "role" : role, //Role of user who submitted the answer.
+        "submitted" : submitted || false,//is Submitted state? It can be in saved or submitted.
+        "approved" : false
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;

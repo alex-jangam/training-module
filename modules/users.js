@@ -1,4 +1,6 @@
 /*globals require, module, console, exports */
+/*jslint node: true, nomen: true, unparam: true */
+"use strict";
 
 var jwt = require('jsonwebtoken'), emsg = require("../emessages"), utils = require("../plugins/utils");
 

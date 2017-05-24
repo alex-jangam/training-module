@@ -15,17 +15,14 @@ var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
 
 var schema = new Schema({
-    "question" : String,//Your question goes here
-    "topic" : String,//Topic code comes here
-    "course" : String,//Course code comes here
-    "code" : String,//question code is auto generated
-    // "submitted" : Boolean,//is Submitted state?
-    "priority" : Number,//Order of questions
-    "guides" : [String]//Add related links
+    "question" : String,//Question code for which its tagged
+    "user" : String,//User who submitted the answer
+    "role" : String, //Role of user who submitted the answer.
+    "comment" : String//Comment goes here.
 }, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
 
 
-var collection = 'questions';
+var collection = 'comments';
 var paginate = 10, defKeys = ["question", "code", "course", "topic", "submitted", "guides", "created", "lastUpdated"],
     sortItem = {item : "priority", order : 1};
 
@@ -35,8 +32,8 @@ schema.methods.findByName = function (name) {
     return newProm.prom;
 };
 
-schema.methods.getCount = function (topic) {
-    var newProm = utils.getpromise(), query = {"topic" : topic};
+schema.methods.getCount = function (code) {
+    var newProm = utils.getpromise(), query = {"question" : code};
     this.model(collection).count(query, newProm.post);
     return newProm.prom;
 };
@@ -53,7 +50,6 @@ schema.methods.findAll = function (page, count) {
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
-    // this.model(collection).find({"account.name" : company}, newProm.post);
     return newProm.prom;
 };
 
@@ -65,9 +61,7 @@ schema.methods.findAndRemove = function (username) {
 };
 
 schema.methods.updateOne = function (usr) {
-    var newProm = utils.getpromise(),
-        user = utils.clone(usr),
-        userFind = {"username" : usr.username};
+    var newProm = utils.getpromise(), user = utils.clone(usr), userFind = {"username" : usr.username};
     this.model(collection).findOneAndUpdate(userFind, user, {new : true}, newProm.post);
     return newProm.prom;
 };
@@ -76,14 +70,12 @@ schema.methods.updateOne = function (usr) {
 var SchemaModel = mongooseClient.model(collection, schema);
 
 module.exports.query = new SchemaModel();// Export the whole 'schema' with all the methods
-module.exports.add = function (question, topic, course, code, priority, guides) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function (question, user, role, comment) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var newProm = utils.getpromise(), ObModel = {
         "question" : question,
-        "topic" : topic,
-        "course" : course,
-        "code" : code,
-        "priority" : priority,
-        "guides" : guides
+        "user" : user,
+        "comment" : comment,
+        "role" : role,
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;

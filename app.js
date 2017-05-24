@@ -15,8 +15,11 @@ var express = require('express'),
 
 app.use(require("body-parser").json());
 require("./controller/setters")(app, express);
+
 app.use(require("./auth/authenticate"));
 require("./controller/users")(app, dao, config);
+require("./controller/category")(app, dao, config);
+require("./controller/courses")(app, dao, config);
 
 
 app.listen(4000, function () {
