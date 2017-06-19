@@ -24,7 +24,7 @@ module.exports = function (emsg, utils) {
 				if (typeof data !== "object") {
 						return false;
 				} else {
-					for (var i = 1; i < arguments.length; i++) {
+					for (var i = 1; i < names; i++) {
 							name = arguments[i];
 							if (data[name] === undefined) {
 									return false;

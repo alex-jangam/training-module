@@ -16,6 +16,12 @@ module.exports.user = {
     },
     getUsers : function (page, count) {
         return users.query.findAll(page, count);
+    },
+    updatePswd : function (name, oldps, nwps) {
+        return users.query.updatePasswordOne(name, oldps, nwps);
+    },
+    remove : function (name) {
+      return users.query.findAndRemove(name);
     }
 };
 

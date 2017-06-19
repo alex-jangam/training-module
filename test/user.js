@@ -12,10 +12,10 @@ var rndm = utils.random(5),
       "password": "password",
     },
     registerUser = {
-        "username" : "usertest",
+        "username" : "usertest" + rndm,
         "password" : "password",
-        "dname" : "user" + rndm,
-    },
+        "dname" : "usertest",
+    },npv = 1,
     superToken,
     userToken,
     header = {
@@ -43,22 +43,13 @@ var rndm = utils.random(5),
 
 */
 
-describe("User login as super admin", function(){
+describe("User Operations", function(){
 
-  it("should login for details of super user", function (done) {
-    chai.request(server)
-      .post('/users/token')
-      .send(superuser)
-      .end(function(err,res){
-        superToken = res.body.token;
-        res.should.have.status(200);
-        done();
-      });
-  });
 
   it("should register the user", function (done) {
     chai.request(server)
       .post('/users/register')
+      .set(header)
       .send(registerUser)
       .end(function(err,res){
         userToken = res.body.token;
@@ -72,9 +63,9 @@ describe("User login as super admin", function(){
     invalid.password = "invalid";
     chai.request(server)
       .post('/users/token')
-      .send(registerUser)
+      .send(invalid)
       .end(function(err,res){
-        res.should.have.status(406);
+        res.should.have.status(401);
         done();
       });
   });
@@ -82,6 +73,7 @@ describe("User login as super admin", function(){
   it("User should be able to login with user credentials", function (done) {
     chai.request(server)
       .post('/users/token')
+      .set(header)
       .send(registerUser)
       .end(function(err,res){
         userToken = res.body.token;
@@ -101,19 +93,10 @@ describe("User login as super admin", function(){
       });
   });
 
-  it("Should get the list of users as super user", function (done) {
-    var nheader = Object.assign({"x-access-token" : superToken}, headers);
-    chai.request(server)
-      .get('/users')
-      .set(nheader)
-      .end(function(err,res){
-        res.should.have.status(200);
-        done();
-      });
-  });
 
-  it("Should get unauthorized for wrong token for superadmin", function (done) {
-    var nheader = Object.assign({"x-access-token" : (superToken + "1")}, headers);
+
+  it("Should get unauthorized for wrong token", function (done) {
+    var nheader = Object.assign({"x-access-token" : (userToken + "1")}, header);
 
     chai.request(server)
       .get('/users')
@@ -125,7 +108,7 @@ describe("User login as super admin", function(){
   });
 
   it("Should not get the list of users as user", function (done) {
-    var nheader = Object.assign({"x-access-token" : userToken}, headers);
+    var nheader = Object.assign({"x-access-token" : userToken}, header);
 
     chai.request(server)
       .get('/users')
@@ -136,6 +119,64 @@ describe("User login as super admin", function(){
       });
   });
 
+  it("Should be able to change password", function (done) {
+     var nheader = Object.assign({"x-access-token" : userToken}, header);
+     var nOb = {
+       password : registerUser.password,
+       newpassword : registerUser.password + npv
+     }
+     chai.request(server)
+       .post('/users/change')
+       .set(nheader)
+       .send(nOb)
+       .end(function(err,res){
+         res.should.have.status(200);
+         done();
+       });
+   });
 
+   it("Should not be able to login with old password", function (done) {
+     var nheader = Object.assign({"x-access-token" : userToken}, header);
+     var nOb = {
+       password : registerUser.username,
+       newPassword : registerUser.password
+     }
+     chai.request(server)
+       .post('/users/token')
+       .send(nOb)
+       .end(function(err,res){
+         userToken = res.body.token;
+         res.should.have.status(406);
+         done();
+       });
+   });
+
+   it("Should be able to login with new password", function (done) {
+     var nheader = Object.assign({"x-access-token" : userToken}, header);
+     var nOb = {
+       username : registerUser.username,
+       password : registerUser.password + npv
+     }
+     chai.request(server)
+       .post('/users/token')
+       .send(nOb)
+       .end(function(err,res){
+         userToken = res.body.token;
+         registerUser.password = registerUser.password + npv;
+         res.should.have.status(200);
+         done();
+       });
+   });
+
+   it("Should be able to remove account", function (done) {
+     var nheader = Object.assign({"x-access-token" : userToken}, header);
+     chai.request(server)
+       .delete('/users/quit')
+       .set(nheader)
+       .end(function(err,res){
+         res.should.have.status(200);
+         done();
+       });
+   });
 
 });

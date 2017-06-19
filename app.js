@@ -25,3 +25,4 @@ require("./controller/courses")(app, dao, config);
 app.listen(4000, function () {
     console.log('app listening on port 4000...');
 });
+module.exports = app;

@@ -70,7 +70,7 @@ userSchema.methods.findByRole = function (role) {
 
 userSchema.methods.findAll = function (page, count) {
     var newProm = utils.getpromise(),
-        query = {"role" : cnst.admin},
+        query = {"role" : cnst.user},
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
@@ -93,10 +93,9 @@ userSchema.methods.updateOne = function (usr) {
 };
 
 
-userSchema.methods.updatePasswordOne = function (usr) {
-    var newProm = utils.getpromise(), user = utils.clone(usr);
-    delete user.newpassword;
-    this.model(collection).findOneAndUpdate(user, {"password" : usr.newpassword}, {"new" : true}, newProm.post);
+userSchema.methods.updatePasswordOne = function (name, oldpswd, newpswd) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOneAndUpdate({username : name, password : oldpswd}, {"password" : newpswd}, {"new" : true}, newProm.post);
     return newProm.prom;
 };
 
