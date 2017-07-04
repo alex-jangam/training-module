@@ -20,13 +20,19 @@ conn = {
 module.exports.secret = "Pa$$";
 module.exports.session = { expiresIn: "1h"};
 module.exports.conn = conn;
+module.exports.port = Number(process.env.PORT) || 4000;
+
 module.exports.authorizedroles = {
 	"/users:GET" : onlysu,
 	"/users/remove:DELETE" : onlysu,
 	"/users/quit:DELETE" : self,
 	"/users/change:POST" : all,
 
+	"/category:POST" : all,
+	"/category:PUT" : all,
 	"/category:GET" : all,
+	"/category/approve:PUT" : onlysu,
+	"/category:DELETE" : onlysu,
 
 	"/courses:POST" : [superu, user],
 	"/courses/approve:PUT" : onlysu

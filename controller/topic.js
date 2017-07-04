@@ -1,4 +1,4 @@
-
+//UI(Catogory) > HTML(course) > Form validation, Types of Inputs
 
 module.exports = function (app, dao, config) {
   var action = require("../modules/courses")(dao, config), auth = require("../auth").topic;

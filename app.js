@@ -7,7 +7,8 @@ var express = require('express'),
     url = 'mongodb://localhost:27017/ux',
     logger = require("./plugins/logger"),
     dao = require("./modules/dao"),
-    jwt = require('jsonwebtoken');
+    jwt = require('jsonwebtoken'),
+    port = config.port;
 
 
     logger.enableHosts(config.local);
@@ -22,7 +23,8 @@ require("./controller/category")(app, dao, config);
 require("./controller/courses")(app, dao, config);
 
 
-app.listen(4000, function () {
-    console.log('app listening on port 4000...');
+app.listen(port, function () {
+    console.log('app listening on port ' + port + '...');
 });
+
 module.exports = app;

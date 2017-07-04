@@ -29,9 +29,23 @@ schema.methods.findByName = function (name) {
     return newProm.prom;
 };
 
+schema.methods.findByCode = function (code) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code}, newProm.post);
+    return newProm.prom;
+};
+
 schema.methods.findLatest = function () {
     var newProm = utils.getpromise();
     this.model(collection).findOne({}).sort({created : -1}).limit( 5 ).exec(newProm.post);
+    return newProm.prom;
+};
+
+// find by code and update.
+schema.methods.updateOne = function (code, categoryData) {
+    var newProm = utils.getpromise();
+    delete categoryData.code;
+    this.model(collection).findOneAndUpdate({code: code}, categoryData, {"new" : true}, newProm.post);
     return newProm.prom;
 };
 
@@ -48,9 +62,9 @@ schema.methods.findById = function (id) {
 };
 
 
-schema.methods.findAll = function (user, page, count) {
+schema.methods.findAll = function (user, isSuper, page, count) {
     var newProm = utils.getpromise(),
-        query = {$or: [{approved : true}, {user : user}]},
+        query = (isSuper && {}) || {$or: [{approved : true}, {user : user}]},
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
@@ -58,9 +72,9 @@ schema.methods.findAll = function (user, page, count) {
 };
 
 
-schema.methods.findAndRemove = function (username) {
+schema.methods.findAndRemove = function (code) {
     var newProm = utils.getpromise();
-    this.model(collection).findOneAndRemove({username : utils.noCase(username)}, newProm.post);
+    this.model(collection).findOneAndRemove({code : code}, newProm.post);
     return newProm.prom;
 };
 

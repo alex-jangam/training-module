@@ -26,14 +26,23 @@ module.exports.user = {
 };
 
 module.exports.category = {
-    getAll : function (user, page, count) {
-        return category.query.findAll(user, page, count);
+    getAll : function (user, isSuper, page, count) {
+        return category.query.findAll(user, isSuper, page, count);
+    },
+    getOne : function (code) {
+        return category.query.findByCode(code);
     },
     getLast : function (page, count) {
         return category.query.findLatest();
     },
     add : function (name, code, suffix, user, approved) {
         return category.add(name, code, suffix, user, approved)
+    },
+    update : function (code, catogory) {
+        return category.query.updateOne(code, catogory);
+    },
+    remove : function (code) {
+        return category.query.findAndRemove(code);
     },
     getAllCourseCount : function () {
       return courses.query.categoryCounts();

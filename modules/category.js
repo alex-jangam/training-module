@@ -34,10 +34,10 @@ module.exports = function (dao, config) {
 
 
 		function getAll(req, res, next) {
-			dao.category.getAll(req.user.username).
+      var user = req.user,  isSuper = (user.role === config.super);
+			dao.category.getAll(user.username, isSuper).
 			then(function (err, data) {
         var dta = utils.clone(data), counts = {};
-
         if (err) {
           generic.gCall(err, data, res)
         } else {
@@ -55,8 +55,50 @@ module.exports = function (dao, config) {
 			})
 		}
 
+    function approve(req, res, next) {
+			var data = req.body;
+			if (generic.checkFields(data, "code")) {
+        dao.category.update(data.code, {approved : true}).then(function (err2, data) {
+          generic.gCall(err2, data, res);
+        });
+			} else {
+				res.status(emsg.invalidData.status).send(emsg.invalidData);
+			}
+		}
+
+    function update(req, res, next) {
+      var data = req.body, user = req.user, isSuper = (user.role === config.super);
+      if (generic.checkFields(data, "code", "name")) {
+        dao.category.getOne(data.code).then(function (erm, catogory) {
+            if((isSuper && catogory.approved) || (!isSuper && !catogory.approved && catogory.user === user.username)) {
+              dao.category.update(data.code, {name : data.name}).then(function (err1, data1) {
+                generic.gCall(err1, data1, res);
+              });
+            } else {
+              res.status(emsg.unauthorized.status).send(emsg.unauthorized);
+            }
+        })
+      } else {
+        res.status(emsg.invalidData.status).send(emsg.invalidData);
+      }
+    }
+
+    function remove(req, res, next) {
+      var data = req.body;
+      if (generic.checkFields(data, "code")) {
+        dao.category.remove(data.code).then(function (err1, data1) {
+          generic.gCall(err1, data1, res);
+        });
+      } else {
+        res.status(emsg.invalidData.status).send(emsg.invalidData);
+      }
+    }
+
 		return {
 			add : add,
-			getAll : getAll
+			getAll : getAll,
+      approve: approve,
+      update : update,
+      remove: remove,
 		}
 }

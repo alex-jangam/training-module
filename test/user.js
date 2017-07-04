@@ -1,3 +1,4 @@
+require('./portconfig')();
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var server = require('../app');
@@ -42,6 +43,7 @@ var rndm = utils.random(5),
 * 11. Accept request.
 
 */
+
 
 describe("User Operations", function(){
 

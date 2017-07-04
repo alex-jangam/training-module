@@ -1,4 +1,4 @@
-
+// UI(catogory) > HTML, CSS, JS
 
 module.exports = function (app, dao, config) {
   var action = require("../modules/course")(dao, config), auth = require("../auth/authorize").course;
