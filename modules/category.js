@@ -58,7 +58,7 @@ module.exports = function (dao, config) {
     function approve(req, res, next) {
 			var data = req.body;
 			if (generic.checkFields(data, "code")) {
-        dao.category.update(data.code, {approved : true}).then(function (err2, data) {
+        dao.category.update(data.code, {user: "", approved : true}).then(function (err2, data) {
           generic.gCall(err2, data, res);
         });
 			} else {

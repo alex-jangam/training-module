@@ -14,10 +14,10 @@ var rndm = utils.random(5),
     },
     user = {
       "password": "password",
-      "username": "usertest@wenable.com"
+      "username": "usertest@training.com"
     }, user2 = {
       "password": "password",
-      "username": "alexander.jangam@wenable.com"
+      "username": "testuser@training.com"
     },npv = 1,
     superToken,
     userToken,user2Token,
@@ -26,7 +26,15 @@ var rndm = utils.random(5),
     }, newUserCatogory = "catogory-" + utils.random(3), newUserCatogoryCode, newSUserCatogory = "catogory-" + utils.random(3), newSUserCatogoryCode;
 
 /**
-
+  * user login
+  * Add catogory by user
+  * Add catogory by superadmin
+  * No duplicate catogory
+  * Users can get all approved categories including self created
+  * Users can edit category before approval
+  * After approval, superadmin can modify the category
+  * User cannot delete category
+  * Superadmin can delete category
 
 */
 
