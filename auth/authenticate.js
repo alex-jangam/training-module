@@ -5,12 +5,7 @@ var config = require("../config"),
 		emessage = require("../emessages");
 module.exports = function (req, res, next) {
 		var headers = req.headers, token = headers["x-access-token"];
-		if (req.method.toUpperCase() === 'OPTIONS') {
-				res.header('Access-Control-Allow-Origin', '*');
-				res.header('Access-Control-Allow-Headers', 'x-access-token,content-type');
-				res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-				return res.status(200).send({});
-		}
+
 		if (config.excempt.includes(req.path)) {
 					next();
 		} else if (!token) {
