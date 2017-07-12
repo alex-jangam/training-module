@@ -1,0 +1,51 @@
+<md-card class="no-pad">
+  <!-- <nav  md-tab-nav-bar class="md-nav-bar caps white">
+    <a md-tab-link
+    *ngFor="let link of navOptions"
+    [routerLink]="link.link"
+    routerLinkActive="active" > {{link.name}} </a>
+  </nav> -->
+
+  <nav md-tab-nav-bar class="navbar navbar-toggleable-md navbar-light bg-faded no-pad ">
+    <button class="navbar-toggler" md-icon-button [mdMenuTriggerFor]="menu">
+      <md-icon >more_vert</md-icon>
+    </button>
+    <md-menu #menu="mdMenu">
+      <button md-menu-item *ngFor="let link of navOptions" [routerLink]="link.path" routerLinkActive="active">
+        <span>{{link.name}}</span>
+      </button>
+      <button md-menu-item [routerLink]="login" >
+        <span>Logout</span>
+      </button>
+    </md-menu>
+
+    <div class="collapse navbar-collapse ">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item" *ngFor="let link of navOptions" routerLinkActive="active">
+          <a  md-tab-link class="nav-link" [routerLink]="link.path" >{{link.name}}</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav fr">
+        <li><a  md-tab-link class="nav-link" [routerLink]="login" >Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <!-- <nav class="navbar navbar-toggleable-md" md-tab-nav-bar >
+    <md-sidenav-container class="side-nav-container">
+      <md-sidenav #sidenav class="side-nav" >
+        <div class="" *ngFor="let link of navOptions">
+          <a md-tab-link  [routerLink]="link.link" routerLinkActive="active" > {{link.name}} </a>
+        </div>
+      </md-sidenav>
+    </md-sidenav-container>
+    <div class="navbar-toggler">
+      <md-icon (click)="sidenavOpen()">more_vert</md-icon>
+    </div>
+    <div class="collapse navbar-collapse">
+      <a md-tab-link
+      *ngFor="let link of navOptions"
+      [routerLink]="link.link"
+      routerLinkActive="active" > {{link.name}} </a>
+    </div>
+  </nav> -->
+</md-card>

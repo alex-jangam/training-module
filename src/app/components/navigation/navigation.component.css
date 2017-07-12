@@ -1,0 +1,18 @@
+.side-nav-container.show-full{
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 100vh;
+	width: 100vw;
+	z-index: 100;
+}
+
+.nav-item.active .nav-link{
+		color: #0d230d;
+}
+.nav-link{
+
+}
+/deep/ .mat-tab-links{
+	width: 100%;
+}

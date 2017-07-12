@@ -1,0 +1,18 @@
+<h1 md-dialog-title>Add Category</h1>
+<div md-dialog-content class="form">
+  <div class="flex-w login-color">
+    <div class="icon-place">
+      <md-icon class="icon-lh">book</md-icon>
+    </div>
+    <md-input-container class="md-icon-float md-block flex-item ">
+      <input mdInput  patternx="[A-Za-z0-9_\-.]+@[A-Za-z0-9]{1,}(.[A-Za-z0-9]{2,4})(\.[A-Za-z.]{2,4})" placeholder="Category Name" required name="category" [(ngModel)]="category"/>
+    </md-input-container>
+  </div>
+  <div class="cls">
+    {{error}}
+  </div>
+</div>
+<div md-dialog-actions class="text-center block">
+  <button md-button md-raised-button (click)="save()" class="btn btn-success">Save</button>
+  <button md-button md-dialog-close="" md-raised-button class="btn btn-default ">Close</button>
+</div>

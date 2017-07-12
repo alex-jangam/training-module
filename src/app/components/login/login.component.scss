@@ -1,0 +1,138 @@
+.login-container {
+    padding-top: calc((100vh - 311px)/2);
+    width: 100%;
+    z-index: 1;
+    top: 0;
+    .emsg {
+        font-size: 12px;
+        font-weight: normal;
+        color: red;
+        text-align: center;
+        height: 25px;
+        line-height: 25px;
+    }
+    .mat-spinner path {
+        stroke: #7CB342 !important;
+    }
+    .onloading {
+        display: none;
+        width: 88px;
+        height: 36px;
+    }
+    .isLoading {
+        .notloading {
+            display: none;
+        }
+        .onloading {
+            display: initial;
+        }
+    }
+    .spinner-size-login {
+        height: 23px;
+        width: 57px;
+    }
+}
+
+.login-background {
+    min-height: 100%;
+    width: 100%;
+    position: relative;
+    ;
+    background-color: #015799;
+    z-index: 0;
+}
+
+
+.login-main {
+    width: 30vw;
+    margin: auto;
+    max-width: 350px;
+    min-width: 300px;
+    background-color: rgba(254, 254, 254, 0.9);
+    padding: 50px 30px;
+    border-radius: 10px;
+}
+
+.box {
+    display: block;
+}
+
+.login-header-1 {
+    width: 65px;
+}
+
+.login-header-2 {
+    width: 245px;
+}
+
+.head-1 {
+    margin-bottom: 23px;
+}
+
+.head-2 {
+    margin-bottom: 65px;
+}
+
+.icon-lh {
+    line-height: 55px;
+    padding-right: 10px;
+}
+
+.login-color {
+    color: #bbbbbb;
+    .forgot-pwd {
+        position: relative;
+        top: -3px;
+    }
+}
+
+.login-color input {
+    color: #2c2c2c;
+}
+
+.text-allign-input {
+    height: 39px;
+    width: 5.6rem;
+    line-height: 52px;
+    border-bottom: 1px solid;
+    border-color: rgba(0, 0, 0, 0.12);
+    display: inline-block;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.text-allign-input:hover {
+    color: #2c2c2c;
+}
+
+.icon-place {
+    width: 34px;
+}
+
+button.btn-adjust {
+    margin: 10px 0;
+}
+
+
+/** Over write md styles **/
+
+
+
+@media screen and (max-width:640px) {
+    app-header-layout img {
+        display: inline-block;
+        vertical-align: middle;
+        max-width: 60px;
+    }
+    app-header-layout .text-cont {
+        display: inline-block;
+        margin: 0 0 0 1em;
+        vertical-align: middle;
+    }
+    .login_head img {
+        max-width: 75px;
+    }
+    .error-exception {
+        font-size: 1em;
+    }
+}

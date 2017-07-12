@@ -1,0 +1,36 @@
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+body{
+	margin: 0px;
+}
+.main-page{
+	min-height: 400px;
+	height: 100vh;
+	background: radial-gradient(ellipse at center, rgba(147,206,222,1) 0%, rgba(147,206,222,1) 7%, rgba(117,189,209,1) 53%, rgba(73,165,191,1) 100%);
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}

@@ -1,0 +1,36 @@
+<div class="login-container login">
+  <md-card class="login-main">
+    <form class="form" #loginForm="ngForm">
+
+      <div class="flex-w login-color">
+        <div class="icon-place">
+          <md-icon class="icon-lh">person</md-icon>
+        </div>
+        <md-input-container class="md-icon-float md-block flex-item ">
+          <input mdInput  patternx="[A-Za-z0-9_\-.]+@[A-Za-z0-9]{1,}(.[A-Za-z0-9]{2,4})(\.[A-Za-z.]{2,4})" placeholder="User ID" required name="name" [(ngModel)]="loginInfo.username"/>
+        </md-input-container>
+
+      </div>
+      <div class="flex-w login-color">
+        <div class="icon-place">
+          <md-icon class="icon-lh">lock</md-icon>
+        </div>
+        <md-input-container class="md-icon-float md-block flex-item">
+          <input mdInput placeholder="Password" type="password" required [(ngModel)]="loginInfo.password" name="password"/>
+        </md-input-container>
+        <!-- <span class="cursor text-allign-input forgot-pwd">Forgot password</span> -->
+      </div>
+      <div class="emsg">
+        {{errorMsg}}
+      </div>
+      <div class="" [ngClass]="{'isLoading': loading}">
+        <md-slide-toggle title="Enable to remember data" color="primary" class="fl" name="rememberMe" [(ngModel)]="remember" >Remember</md-slide-toggle>
+        <button md-raised-button class="btn btn-success fr btn-adjust white notloading" (click)="login(loginInfo)" [disabled]="!loginForm.form.valid">LOGIN</button>
+        <button md-raised-button class="btn btn-success fr btn-adjust white onloading" disabled >
+          <md-spinner class="spinner-size-login" ></md-spinner>
+        </button>
+        <div class="htfix"></div>
+      </div>
+    </form>
+  </md-card>
+</div>
