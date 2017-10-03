@@ -45,7 +45,7 @@ module.exports = function (dao, config) {
 				if (isSuper) {
 						uName = "";
 				}
-				if (generic.checkFields(data, "category")) {
+				if (generic.checkFields(params, "category")) {
 						dao.courses.getAll(category, uName, params.page, params.count).
 						then(function (err, data) {
 							generic.gCall(err, data, res)
