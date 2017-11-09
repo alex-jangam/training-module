@@ -9,7 +9,7 @@
   * User will have one course object with role user with username. This helps in identifying permissions to the course.
 **/
 var utils = require("../plugins/utils");
-var cnst = require("../config");
+var config = require("../config");
 var mongConn = require('./connection');
 var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
@@ -37,9 +37,22 @@ var paginate = 10, defKeys = ["name", "code", "category", "suffix", "user", "rol
 
 schema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({ username : utils.noCase(name)}, newProm.post);
+    this.model(collection).findOne({ name : name}, newProm.post);
     return newProm.prom;
 };
+
+schema.methods.findByCodeName = function (code, user) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code, user : user || ""}, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.findByCode = function (code, name) {
+    var newProm = utils.getpromise();
+    this.model(collection).find({ code : code}, newProm.post);
+    return newProm.prom;
+};
+
 schema.methods.getCount = function (category) {
     var newProm = utils.getpromise(), query = {"category" : category};
     this.model(collection).count(query, newProm.post);
@@ -71,6 +84,12 @@ schema.methods.approve = function (user, course) {
     return newProm.prom;
 };
 
+schema.methods.approveAdmin = function (user, course) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOneAndUpdate({ user : user, code : course, approved : true}, {role : config.admin}, newProm.post);
+    return newProm.prom;
+};
+
 schema.methods.findAll = function (category, name, page, count) {
     var newProm = utils.getpromise(),
         query = {
@@ -81,17 +100,21 @@ schema.methods.findAll = function (category, name, page, count) {
             ]
         }, sort = {user : 1},
         aggList = aggr.getUnique(query, "code", sort, defKeys);
-
-    this.model(collection).aggregate(aggList).exec(pagequery.post);
+    this.model(collection).aggregate(aggList).exec(newProm.post);
     return newProm.prom;
 };
 
-schema.methods.findAndRemove = function (username) {
+schema.methods.findAndRemove = function (code) {
     var newProm = utils.getpromise();
-    this.model(collection).findOneAndRemove({username : utils.noCase(username)}, newProm.post);
+    this.model(collection).findOneAndRemove({code : code}, newProm.post);
     return newProm.prom;
 };
 
+schema.methods.findAndRemoveMany = function (code) {
+    var newProm = utils.getpromise();
+    this.model(collection).remove({code : code}, newProm.post);
+    return newProm.prom;
+};
 
 var SchemaModel = mongooseClient.model(collection, schema);
 

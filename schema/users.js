@@ -27,7 +27,7 @@ var paginate = 50, defKeys = ["username", "dname", "role", "lastLogin"], sortIte
 // userSchema.index( { username : 1, });
 userSchema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({ username : utils.noCase(name) }, newProm.post);
+    this.model(collection).findOne({ username : utils.noCase(name) }).exec(newProm.post);
     return newProm.prom;
 };
 

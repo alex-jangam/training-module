@@ -14,7 +14,12 @@ module.exports = function (emsg, utils) {
 				} else if(!result && result!=0){
 						response.status(emsg.noData.status).send(emsg.noData);
 				} else {
-						var resTmp = utils.clone(result);
+						var resArr, resEnt, resMessage, resStatus, resTmp = utils.clone(result);
+						// if(Array.isArray) {
+						// 	resArr = resTmp;
+						// } else {
+						// 	resEnt = resTmp
+						// }
 						response.send(resTmp);
 				}
 		}

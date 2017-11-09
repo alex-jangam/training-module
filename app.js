@@ -18,9 +18,7 @@ app.use(require("body-parser").json());
 require("./controller/setters")(app, express);
 
 app.use(require("./auth/authenticate"));
-require("./controller/users")(app, dao, config);
-require("./controller/category")(app, dao, config);
-require("./controller/courses")(app, dao, config);
+require("./controller/routes")(app, dao, config);
 
 
 app.listen(port, function () {

@@ -4,9 +4,9 @@ var hostname = require("os").hostname(), defaultHost = process.env.USER_MONGO ||
 
 var superu = "super", admin = "admin", user = "user", all = [superu,admin,user], onlysu = [superu], self = "self";
 module.exports.local = "localhost";
-module.exports.admin = "admin";
+module.exports.admin = admin;
 module.exports.super = superu;
-module.exports.user = "user";
+module.exports.user = user;
 module.exports.self = self;
 if (hostname.includes("PC") || hostname.includes(".local")) {
 		module.exports.local = hostname;
@@ -34,7 +34,12 @@ module.exports.authorizedroles = {
 	"/category/approve:PUT" : onlysu,
 	"/category:DELETE" : onlysu,
 
-	"/courses:POST" : [superu, user],
+	"/courses:GET" : [superu, admin, user],
+	"/courses/enroll:GET" : [admin],
+	"/courses/request:GET" : [admin],
+	"/courses:POST" : [superu, admin],
+	"/courses:DELETE" : [superu],
+	"/courses/all:DELETE" : [superu],
 	"/courses/approve:PUT" : onlysu
 }
 

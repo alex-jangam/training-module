@@ -1,14 +1,11 @@
 
 
-module.exports = function (app, db) {
-  app.get('/', function (req,res) {
-    res.send("Hello Rahul");
-  })
+module.exports = function (app, dao, config) {
+
   app.get('/public', function(req, res){
     res.sendfile('./ui/this.html');
   });
-
-  require("./users")(app);
-  // require("./someother")(app);
-
+  require("./users")(app, dao, config);
+  require("./category")(app, dao, config);
+  require("./courses")(app, dao, config);
 }

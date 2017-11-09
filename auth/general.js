@@ -3,6 +3,7 @@ var config = require("../config"), emsg = require("../emessages"), utils = requi
 module.exports = function (req, res, next) {
 		var user = req.user, urlroles = req.path.concat(":").concat(req.method), newProm = utils.getpromise(), roles = config.authorizedroles[urlroles] || [], allData = Object.assign({},req.params,req.body);
 		// console.log(user.role, roles);
+		Object.assign(req.params, req.query);
 		if (roles === config.self) {
 				if (user.username === allData.username || !allData.username) {
 					newProm.post();

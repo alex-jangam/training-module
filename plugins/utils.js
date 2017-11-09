@@ -225,43 +225,6 @@
     }
   }
 
-  function promiseAddOld(name){
-    var erP,resP,allFns = [],fnlFn,dummy=function(){},next=true,
-    stop = function (con){
-      //Stop function stops from propagating to next then. It takes in (optional)comparision and returns true(stop propagation) or false(continue propagation)
-      if(con === undefined || con)next=false;
-      return !next;
-    },//Can be used to stop going to next .then callback function.
-    thnFn = function(fnCB,cbname){//all functions from then are added into series of functions and exected one bt one
-      allFns.push(fnCB);if(cbname)name=cbname;
-      return {then : thnFn,finally: final,error : err}
-    },exec = function(er,re){//final function to be called after async call prom.exec
-      function sendOut(){
-        err = dummy;
-        for(var i=0;i<allFns.length;i++){
-          try {
-            if(next)
-            allFns[i](er,re,stop);//execute all functions added to "then" promise.
-          } catch (e) {
-            err = function(ecb){ecb(e)};
-            console.log((name?(name+" : "):"") + "failed at promise ",i+1," with message ",e);
-          }
-        }
-        if(typeof fnlFn == 'function')fnlFn(er,re);//final function is last function to execute.
-      }
-      if(allFns.length > 0)sendOut();
-      else setTimeout(sendOut, 0);
-    },
-    err = dummy,
-    final = function(CB){fnlFn = CB}
-
-    //prom - add functions in sequence using this return method.
-    return {
-      prom : {then : thnFn,finally: final,error : err},
-      post : exec
-    }
-  }
-
   function promiseAdd(name){
     var erP,resP,allFns = [],fnlFn,dummy=function(){},next=true, erTrig = false,
     stop = function (con){

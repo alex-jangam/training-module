@@ -14,8 +14,8 @@ module.exports = function () {
           group[key] = { "$first" : '$' + key};
           project[key] = "$" + key;
         }
-        aggList.push(group);
-        aggList.push(project);
+        aggList.push({$group : group});
+        aggList.push({$project : project});
 				return aggList;
 		}
 

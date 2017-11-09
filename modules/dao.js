@@ -8,6 +8,9 @@ var users = require("../schema/users"),
 
 
 module.exports.user = {
+    getUser : function (name) {
+      return users.query.findByName(name)
+    },
     getbyCred : function (name, password) {
         return users.query.updateByNameAndPassword(name, password);
     },
@@ -54,13 +57,32 @@ module.exports.courses = {
     getLast : function (page, count) {
         return courses.query.findLatest();
     },
+    getCourse : function (name) {
+        return courses.query.findByName(name);
+    },
+    getCourseCode : function (code) {
+      return courses.query.findByCode(code);
+    },
+    getCourseCodeName : function (code, name) {
+      return courses.query.findByCodeName(code, name);
+    },
     add : function (name, code, category, suffix, user, role, approved) {
         return courses.add(name, code, category, suffix, user, role, approved)
     },
     approve : function (user, course) {
         return courses.query.approve(user, course);
     },
+    approveAdmin : function (user, course) {
+        return courses.query.approveAdmin(user, course);
+    },
     getAll : function (category, name, page, count) {
         return courses.query.findAll(category, name, page, count);
-    }
+    },
+    remove : function (code) {
+        return courses.query.findAndRemove(code);
+    },
+    removeMany : function (code) {
+        return courses.query.findAndRemoveMany(code);
+    },
+
 };

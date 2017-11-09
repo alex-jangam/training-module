@@ -25,7 +25,7 @@ var collection = 'category',
 
 schema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({ username : utils.noCase(name)}, newProm.post);
+    this.model(collection).findOne({ name : utils.noCase(name)}, newProm.post);
     return newProm.prom;
 };
 

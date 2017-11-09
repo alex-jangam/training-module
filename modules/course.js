@@ -11,34 +11,42 @@ module.exports = function (dao, config) {
 		/* Supportive functions end */
 		function add(req, res, next) {
 				var code, num = 0, data = req.body, post = {}, user = req.user, isSuper = (user.role === config.super), role = config.admin, uName = user.username;
+				function addCourse(data, uName, role, isSuper) {
+					dao.courses.add(data.name, code, data.category, (data.suffix || data.name).toLowerCase(), uName, role, isSuper).
+					then(function (err2, data) {
+						generic.gCall(err2, data, res);
+					});
+				}
 				if (generic.checkFields(data, "name", "category")) {
 						dao.courses.getLast().
 						then(function (err, resp) {
 								if (err) {
 										generic.gCall(err, resp, res);
-										return;
-								}
-								if (resp) {
+								} else {
+									if (resp) {
 										num = parseInt(resp.code.split("-")[1], 10) + 1;
-								}
-								code = suffix + "-" + num;
-								//Super admin default approved : name, code, category, suffix, user, role, approved
-								if (isSuper) {
+									}
+									code = suffix + "-" + num;
+									//Super admin default approved : name, code, category, suffix, user, role, approved
+									if (isSuper) {
 										uName = ""; role = "";
+										dao.courses.getCourse(data.name).then(function (err, resp) {
+												if(resp) {
+														res.status(emsg.duplicateData.status).send(emsg.duplicateData);
+												} else {
+														addCourse(data, uName, role, isSuper);
+												}
+										})
+									} else {
+											addCourse(data, uName, role, isSuper);
+									}
+
 								}
-								dao.courses.add(data.name, code, data.category, (data.suffix || data.name).toLowerCase(), uName, role, isSuper).
-								then(function (err2, data) {
-									generic.gCall(err2, data, res);
-								});
 						});
 				} else {
 						res.status(emsg.invalidData.status).send(emsg.invalidData);
 				}
 		}
-
-		// dao.category.getAllTopicsCount().then(function (err3, cnts) {
-		// 	console.log(err3, cnts);
-		// });
 
 		function getAll(req, res, next) {
 				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params;
@@ -46,7 +54,7 @@ module.exports = function (dao, config) {
 						uName = "";
 				}
 				if (generic.checkFields(params, "category")) {
-						dao.courses.getAll(category, uName, params.page, params.count).
+						dao.courses.getAll(params.category, uName, params.page, params.count).
 						then(function (err, data) {
 							generic.gCall(err, data, res)
 						});
@@ -55,31 +63,102 @@ module.exports = function (dao, config) {
 				}
 		}
 
+
 		//Approve is only for super admin.
 		function approve(req, res, next) {
 				var data = req.body, user = data.user, course = data.course;
-				dao.courses.approve(user, course).
-				then(function (err, resp) {
-						var blank = utils.clone(resp);
-						if (err || !resp) {
-							return generic.gCall(err, resp, res);
-						}
-						dao.courses.add(resp.name, resp.code, resp.category, resp.suffix, "", "", true).
-						then(function (err2, resp2) {
-								generic.gCall(err2, resp2, res);
-						});
-				})
+				if (generic.checkFields(data, "user", "course")) {
+						dao.courses.approve(user, course).
+						then(function (err, resp) {
+								var blank = utils.clone(resp);
+								if (err || !resp) {
+										return generic.gCall(err, resp, res);
+								}
+								dao.courses.add(resp.name, resp.code, resp.category, resp.suffix, "", "", true).
+								then(function (err2, resp2) {
+										generic.gCall(err2, resp2, res);
+								});
+						})
+				} else {
+					res.status(emsg.invalidData.status).send(emsg.invalidData);
+				}
 		}
+
+		function remove(req, res, next) {
+      var data = req.body;
+      if (generic.checkFields(data, "code")) {
+        dao.courses.remove(data.code).then(function (err1, data1) {
+          generic.gCall(err1, data1, res);
+        });
+      } else {
+        res.status(emsg.invalidData.status).send(emsg.invalidData);
+      }
+    }
+
+		function removeMany(req, res, next) {
+      var data = req.body;
+      if (generic.checkFields(data, "code")) {
+        dao.courses.removeMany(data.code).then(function (err1, data1) {
+          generic.gCall(err1, data1, res);
+        });
+      } else {
+        res.status(emsg.invalidData.status).send(emsg.invalidData);
+      }
+    }
 
 		function registered(req, res, next) {
 				res.send()
+		}
+
+		function adminRequest(req, res, next) {
+			var data = req.params, user = req.user;
+			if (generic.checkFields(data, "code")) {
+				dao.courses.getCourseCodeName(data.code, user.username).then(function (err, resp) {
+					if (err) {
+						generic.gCall(err, resp, res);
+					} else if (!resp) {
+						res.status(emsg.invalidData.status).send(emsg.invalidData)
+					} else {
+						dao.courses.approveAdmin(user.name, resp.code).
+						then(function (err2, resp2) {
+							generic.gCall(err2, resp2, res);
+						});
+					}
+				});
+			} else {
+				res.status(emsg.invalidData.status).send(emsg.invalidData);
+			}
+		}
+
+		function enrollRequest(req, res, next) {
+			var data = req.params, user = req.user;
+			if (generic.checkFields(data, "code")) {
+				dao.courses.getCourseCodeName(data.code, "").then(function (err, resp) {
+					if (err) {
+						generic.gCall(err, resp, res);
+					} else if (!resp) {
+						res.status(emsg.invalidData.status).send(emsg.invalidData)
+					} else {
+						dao.courses.add(resp.name, resp.code, resp.category, resp.suffix, user.username, config.user, true).
+						then(function (err2, resp2) {
+							generic.gCall(err2, resp2, res);
+						});
+					}
+				});
+			} else {
+				res.status(emsg.invalidData.status).send(emsg.invalidData);
+			}
 		}
 
 		return {
 				add : add,
 				approve : approve,
 				getAll : getAll,
-				registered : registered
+				registered : registered,
+				remove: remove,
+				removeMany: removeMany,
+				enroll: enrollRequest,
+				adminRequest : adminRequest
 		}
 
 }
