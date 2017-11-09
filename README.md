@@ -2,6 +2,6 @@
 Training module for learners
 
 #Developers
-Alexander Pradeep Jangam, Rahul Munakala, Ram Kumar
+Alexander Pradeep Jangam
 
 #Licence MIT
