@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {HttpService} from '../../services/http/http.service'
+import {CategoryService} from 'app/services/category/category.service'
 
 @Component({
   selector: 'app-add-category',
@@ -10,12 +10,12 @@ import {HttpService} from '../../services/http/http.service'
 export class AddCategoryComponent implements OnInit {
   category: string;
   error: string;
-  constructor(private http:HttpService,public dialogRef: MdDialogRef<AddCategoryComponent>) {}
+  constructor(private http:CategoryService,public dialogRef: MdDialogRef<AddCategoryComponent>) {}
   ngOnInit() {
   }
 
   save(){
-    this.http.addCategory({name :this.category}).subscribe(res => this.saved(res.json()),er => this.errorHandler(er.json()))
+    this.http.addCategory({name :this.category}).subscribe(res => this.saved(res),er => this.errorHandler(er))
   }
 
   saved(res){
@@ -23,7 +23,6 @@ export class AddCategoryComponent implements OnInit {
   }
 
   errorHandler(er){
-    console.log(er)
     this.error = er.message
   }
 }

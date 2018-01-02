@@ -1,0 +1,18 @@
+<h1 md-dialog-title>Add Course</h1>
+<div md-dialog-content class="form">
+  <div class="flex-w login-color">
+    <div class="icon-place">
+      <md-icon class="icon-lh">book</md-icon>
+    </div>
+    <md-input-container class="md-icon-float md-block flex-item ">
+      <input mdInput placeholder="Course Name" required name="course" [(ngModel)]="course"/>
+    </md-input-container>
+  </div>
+  <div class="cls">
+    {{error}}
+  </div>
+</div>
+<div md-dialog-actions class="text-center block">
+  <button md-button md-raised-button (click)="save()" class="btn btn-success">Save</button>
+  <button md-button md-dialog-close="" md-raised-button class="btn btn-default ">Close</button>
+</div>

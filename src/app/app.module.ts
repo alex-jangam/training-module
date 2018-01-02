@@ -17,13 +17,23 @@ import { AddCategoryComponent } from './modals/add-category/add-category.compone
 import 'hammerjs';
 
 // Services go to providers
-import {HttpService} from './services/http/http.service'
 import {LocalstoreService} from './services/localStore/localstore.service'
-import {UtilsService} from './services/utils/utils.service'
+import {UtilsService} from './services/utils/utils.service';
+import { OverlayService } from 'app/services/overlay/overlay.service';
+import { LoginChangeinService } from 'app/services/login/login.service';
+import {HttpService} from './services/http/http.service'
+import {CategoryService} from './services/category/category.service'
+import {CoursesService} from 'app/services/courses/courses.service';
+import {SubCoursesService} from 'app/services/sub-courses/sub-courses.service';
 
 // Modules go to imports
 import {Routing} from './modules/route/route.module';
 import { CategoryComponent } from './components/category/category.component';
+import { CoursesComponent } from './components/courses/courses.component';
+import { SubCourseComponent } from './components/sub-course/sub-course.component';
+import { TopicComponent } from './components/topic/topic.component';
+import { OverlayComponent } from './components/overlay/overlay.component';
+import { AddCourseComponent } from './modals/add-course/add-course.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +45,11 @@ import { CategoryComponent } from './components/category/category.component';
     DashboardComponent,
     AddCategoryComponent,
     CategoryComponent,
+    CoursesComponent,
+    SubCourseComponent,
+    TopicComponent,
+    OverlayComponent,
+    AddCourseComponent
   ],
   imports: [
     BrowserModule,
@@ -45,13 +60,19 @@ import { CategoryComponent } from './components/category/category.component';
     HttpModule,
   ],
   providers: [
-    HttpService,
     LocalstoreService,
-    UtilsService
+    UtilsService,
+    OverlayService,
+    LoginChangeinService,
+    HttpService,
+    CategoryService,
+    CoursesService,
+    SubCoursesService
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    AddCategoryComponent
+    AddCategoryComponent,
+    AddCourseComponent
   ]
 })
 export class AppModule { }

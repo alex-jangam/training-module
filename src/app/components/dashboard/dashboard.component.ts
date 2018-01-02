@@ -1,27 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpService} from '../../services/http/http.service'
-import {UtilsService} from '../../services/utils/utils.service'
+import {CategoryService} from 'app/services/category/category.service';
+import {UtilsService} from 'app/services/utils/utils.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {AddCategoryComponent} from '../../modals/add-category/add-category.component'
-import {Router} from '@angular/router'
+import {AddCategoryComponent} from 'app/modals/add-category/add-category.component';
+import {LocalstoreService} from 'app/services/localStore/localstore.service';
+import * as config from 'app/services/config/config.service';
+import {Router} from '@angular/router';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
+
 export class DashboardComponent implements OnInit {
   tiles : any[];
-
-  constructor(private router: Router,private http : HttpService, private utils: UtilsService, public dialog: MdDialog) {
+  isSuper: boolean = false;
+  isAdmin: boolean = false;
+  onapprove:boolean = false;
+  constructor(private router: Router,private http : CategoryService, private utils: UtilsService, public dialog: MdDialog, private ls:LocalstoreService) {
 
   }
 
   ngOnInit() {
-    this.getCatogories()
+    this.getCatogories();
+    let user = this.ls.getItem("user");
+    this.isSuper = (user.role === config.SA);
+    this.isAdmin = (user.role === config.ADMIN);
   }
 
   getCatogories(){
-      this.http.getCategories().subscribe(resp => this.catogorySuccess(resp.json()))
+      this.http.getCategories().subscribe(resp => this.catogorySuccess(resp));
   }
 
   catogorySuccess(resp){
@@ -33,7 +42,11 @@ export class DashboardComponent implements OnInit {
   }
 
   openCourse(code:string){
-    this.router.navigate(['/course', code]);
+    setTimeout(() => {
+      if(!this.onapprove) {
+        this.router.navigate(['/course', code]);
+      }
+    }, 10)
   }
 
   addCategory(){
@@ -47,4 +60,12 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  categoryApprove(catogory){
+    this.onapprove = true;
+    this.http.approveCatogory(catogory).subscribe((res:any) =>{
+      let resp = res || {};
+      catogory.approved = resp.approved;
+      this.onapprove = false;
+    });
+  }
 }

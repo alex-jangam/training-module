@@ -13,14 +13,6 @@ export class AppComponent implements OnInit{
   constructor(private https: HttpService){
   }
   ngOnInit() {
-    let baseUrl = "";
-    switch(environment.name){
-      case "local":
-      baseUrl = "http://localhost:4000";
-      break;
-      case "dev":break;
-      case "prod":break;
-    }
-    this.https.setBase(baseUrl);
+
   }
 }

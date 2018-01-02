@@ -1,23 +1,43 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, URLSearchParams, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import {LocalstoreService} from '../localStore/localstore.service'
+import {LocalstoreService} from 'app/services/localStore/localstore.service';
 
-import {User} from '../../classes/user';
+import {User} from 'app/classes/user';
+import {environment} from '../../../environments/environment';
+import * as config from 'app/services/config/config.service';
+import {LoginChangeinService} from 'app/services/login/login.service';
+import { OverlayService } from "app/services/overlay/overlay.service";
+import { Router } from '@angular/router';
+
 
 @Injectable()
 export class HttpService {
   accessHeader: any = {'Content-Type': 'application/json'};
   basicHeader: any = this.accessHeader;
   accessName = "x-access-token";
-  base: string = "";
+  public base: string = "";
   STATUS_CODE_200 = 200;
-  constructor(private http: Http, private ls: LocalstoreService) {
+  constructor(public http: Http, public ls: LocalstoreService, public router: Router, public overlay: OverlayService, public loginchange: LoginChangeinService) {
     if (!this.accessHeader.hasOwnProperty(this.accessName)) {
         let authT = {}, token = this.ls.getItem(this.accessName) || false;
         authT[this.accessName] = token;
         this.accessHeader = Object.assign(authT, this.accessHeader);
     }
+    this.checkbase();
+    this.loginchange.lookfor.subscribe((val) => this.resetAccessHeaders())
+  }
+
+  checkbase() {
+    let baseUrl = "";
+    switch(environment.name){
+      case "local":
+      baseUrl = "http://localhost:4000";
+      break;
+      case "dev":break;
+      case "prod":break;
+    }
+    this.setBase(baseUrl);
   }
 
   getReqOptions(headers: any, params?: Object){
@@ -31,19 +51,87 @@ export class HttpService {
   }
 
   httpGet(url: string, headers: Object, params?: Object){
-    return this.http.get(url, this.getReqOptions(headers, params))
+    let ser = this.servStart();
+    return new Observable((observer) => {
+        this.http.get(url, this.getReqOptions(headers, params))
+        .subscribe(
+          (data) => {
+            this.servEnd(ser);
+            observer.next(data.json());
+            observer.complete();
+          }, (err) => {
+            this.servEnd(ser);
+            let erMsg = (err.json() || {}).message;
+            if(erMsg == config.sessionExpire || erMsg === config.expireToken) {
+              this.router.navigateByUrl(config.loginPath)
+            }
+            observer.error(err.json());
+            observer.complete();
+          })
+        });
   }
 
   httpPost(url, body, headers, params){
-    return this.http.post(url, body, this.getReqOptions(headers, params));
+    let ser = this.servStart();
+    return new Observable((observer) => {
+        this.http.post(url, body, this.getReqOptions(headers, params))
+        .subscribe(
+          (data) => {
+            this.servEnd(ser);
+            observer.next(data.json());
+            observer.complete();
+          }, (err) => {
+            this.servEnd(ser);
+            let erMsg = (err.json() || {}).message;
+            if(erMsg == config.sessionExpire || erMsg === config.expireToken) {
+              this.router.navigateByUrl(config.loginPath)
+            }
+            observer.error(err.json());
+            observer.complete();
+          })
+        });
   }
 
   httpPut(url, body, headers, params){
-    return this.http.put(url, body, this.getReqOptions(headers, params))
+    let ser = this.servStart();
+    return new Observable((observer) => {
+        this.http.put(url, body, this.getReqOptions(headers, params))
+        .subscribe(
+          (data) => {
+            this.servEnd(ser);
+            observer.next(data.json());
+            observer.complete();
+          }, (err) => {
+            this.servEnd(ser);
+            let erMsg = (err.json() || {}).message;
+            if(erMsg == config.sessionExpire || erMsg === config.expireToken) {
+              this.router.navigateByUrl(config.loginPath)
+            }
+            observer.error(err.json());
+            observer.complete();
+          })
+        });
   }
 
   httpDel(url, body, headers, params){
-    return this.http.delete(url, this.getReqOptions(headers, params))
+    let ser = this.servStart();
+    return new Observable((observer) => {
+        this.http.delete(url, this.getReqOptions(headers, params))
+        .subscribe(
+          (data) => {
+            this.servEnd(ser);
+            observer.next(data.json());
+            observer.complete();
+          }, (err) => {
+            this.servEnd(ser);
+            let erMsg = (err.json() || {}).message;
+            if(erMsg == config.sessionExpire || erMsg === config.expireToken) {
+              this.router.navigateByUrl(config.loginPath)
+            }
+            observer.error(err.json());
+            observer.complete();
+          })
+        });
   }
 
   processObj(res){
@@ -53,6 +141,15 @@ export class HttpService {
 		}
     return this.errorHandler(body);
   }
+
+  servStart() {
+    let nos = this.overlay.openLayer(true);
+    return nos;
+  }
+  servEnd(ob) {
+    this.overlay.openLayer(false, ob);
+  }
+
 
   errorHandler(error){
     let errMsg: string;
@@ -69,24 +166,14 @@ export class HttpService {
   public setBase(nbase:string){
     this.base = nbase;
   }
-  public setAccessHeaders(aToken:string){
-    if(aToken)
-      this.accessHeader[this.accessName] = aToken;
+
+  public resetAccessHeaders() {
+    setTimeout(() => {
+      this.accessHeader[this.accessName] = this.ls.getItem(this.accessName);
+    }, 100)
   }
   public token(user: User){
       return this.httpPost(this.base + "/users/token", user, this.basicHeader, {});
-  }
-
-  public getCategories(){
-      return this.httpGet(this.base + "/category", this.accessHeader, {});
-  }
-
-  public addCategory(cat: object){
-      return this.httpPost(this.base + "/category", cat, this.accessHeader, {});
-  }
-
-  public getCourses(){
-      return this.httpGet(this.base + "/course", this.accessHeader, {});
   }
 
 }

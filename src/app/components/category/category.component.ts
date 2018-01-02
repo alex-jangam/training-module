@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {HttpService} from '../../services/http/http.service'
+import {CoursesService} from 'app/services/courses/courses.service';
 
 @Component({
   selector: 'app-category',
@@ -9,19 +9,20 @@ import {HttpService} from '../../services/http/http.service'
 })
 export class CategoryComponent implements OnInit {
   categoryId: any;
-  constructor(private route: ActivatedRoute,private http : HttpService) { }
+  constructor(private route: ActivatedRoute,private http : CoursesService) { }
 
   ngOnInit() {
-    this.categoryId = this.route.params.subscribe(params => {
+    this.route.params.subscribe(params => {
        this.categoryId = +params['id']; // (+) converts string 'id' to a number
+       this.getCourses(params['id'] || "all")
     });
   }
 
-  getCategories(){
-      this.http.getCategories().subscribe(res => this.listCategories(res.json()))
+  getCourses(id){
+    this.http.getCourses(id).subscribe(res => this.listCourses(res))
   }
 
-  listCategories(result){
+  listCourses(result){
     console.log(result)
   }
 
