@@ -36,6 +36,7 @@ module.exports.authorizedroles = {
 
 	"/courses:GET" : [superu, admin, user],
 	"/courses/enroll:GET" : [admin],
+	"/courses/all:GET" : [superu, admin, user],
 	"/courses/request:GET" : [admin],
 	"/courses:POST" : [superu, admin],
 	"/courses:DELETE" : [superu],

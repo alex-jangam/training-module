@@ -24,20 +24,22 @@ var schema = new Schema({
     // "rcount" : {type : Number , default : 0},//Count of registered items under this course.- get from topic collection
     "approved" : Boolean,//to be approved by superadmin for permission as admin.
     "user" : String,//Username of user who accesses the course
-    "role" : String //role of registered
-}, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
+    "role" : String, //role of registered
+    "created": Date,
+    "lastUpdated": {type : Date , default : new Date()}
+}, {versionKey : false});
 
 schema.index({ name : 1, user : 1}, { unique : true });
 schema.index({ code : 1, user : 1}, { unique : true });
 
 
 var collection = 'courses';
-var paginate = 10, defKeys = ["name", "code", "category", "suffix", "user", "role", "created", "lastUpdated"],
+var paginate = 10, defKeys = ["name", "code", "category", "suffix", "user", "role", "created", "approved", "lastUpdated"],
     sortItem = [{item : "user", order : 1}];
 
 schema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({ name : name}, newProm.post);
+    this.model(collection).findOne({ name : utils.noCase(name)}, newProm.post);
     return newProm.prom;
 };
 
@@ -98,11 +100,30 @@ schema.methods.findAll = function (category, name, page, count) {
                 {user: name},
                 {user : "", approved : true},
             ]
-        }, sort = {user : 1},
+        }, sort = {user : 1}, aggList;
         aggList = aggr.getUnique(query, "code", sort, defKeys);
     this.model(collection).aggregate(aggList).exec(newProm.post);
     return newProm.prom;
 };
+schema.methods.findAllbyCategory = function (category) {
+    var newProm = utils.getpromise(),
+        query = {
+             category : category
+        }, sort = {user : 1}, aggList;
+        if(!category)delete query.category;
+        aggList = aggr.getUnique(query, "code", sort, defKeys);
+    this.model(collection).aggregate(aggList).exec(newProm.post);
+    return newProm.prom;
+};
+schema.methods.findEnrolled = function (name, page, count) {
+    var newProm = utils.getpromise(),
+        query = {user: name},
+        sort = {user : 1},
+        aggList = aggr.getUnique(query, "code", sort, defKeys);
+    this.model(collection).aggregate(aggList).exec(newProm.post);
+    return newProm.prom;
+};
+
 
 schema.methods.findAndRemove = function (code) {
     var newProm = utils.getpromise();
@@ -119,7 +140,7 @@ schema.methods.findAndRemoveMany = function (code) {
 var SchemaModel = mongooseClient.model(collection, schema);
 
 module.exports.query = new SchemaModel();// Export the whole 'schema' with all the methods
-module.exports.add = function (name, code, category, suffix, user, role, approved) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function (name, code, category, suffix, user, role, approved, time) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var newProm = utils.getpromise(), ObModel = {
         "name" : name,
         "code" : code,
@@ -127,7 +148,8 @@ module.exports.add = function (name, code, category, suffix, user, role, approve
         "suffix" : suffix,
         "approved" : approved || false,
         "user" : user,
-        "role" : role
+        "role" : role,
+        "created" : time || new Date()
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;

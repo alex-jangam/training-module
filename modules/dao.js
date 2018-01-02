@@ -38,8 +38,8 @@ module.exports.category = {
     getLast : function (page, count) {
         return category.query.findLatest();
     },
-    add : function (name, code, suffix, user, approved) {
-        return category.add(name, code, suffix, user, approved)
+    add : function (name, code, suffix, user, approved, time) {
+        return category.add(name, code, suffix, user, approved, time)
     },
     update : function (code, catogory) {
         return category.query.updateOne(code, catogory);
@@ -66,8 +66,8 @@ module.exports.courses = {
     getCourseCodeName : function (code, name) {
       return courses.query.findByCodeName(code, name);
     },
-    add : function (name, code, category, suffix, user, role, approved) {
-        return courses.add(name, code, category, suffix, user, role, approved)
+    add : function (name, code, category, suffix, user, role, approved, time) {
+        return courses.add(name, code, category, suffix, user, role, approved, time)
     },
     approve : function (user, course) {
         return courses.query.approve(user, course);
@@ -78,6 +78,16 @@ module.exports.courses = {
     getAll : function (category, name, page, count) {
         return courses.query.findAll(category, name, page, count);
     },
+    getAllCourses : function (category, name, page, count) {
+        return courses.query.findAll(category, name, page, count);
+    },
+    getEnrolled: function (name, page, count) {
+        return courses.query.findEnrolled(name, page, count);
+    },
+    getByCategory: function (category) {
+        return courses.query.findAllbyCategory(category);
+    },
+
     remove : function (code) {
         return courses.query.findAndRemove(code);
     },

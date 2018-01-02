@@ -404,8 +404,29 @@ describe("Catogory Operations", function () {
         done();
       });
   });
+
+  /** User2 can see all enrolled */
+  it("User2 should be able to get enrolled courses", function (done) {
+    var nheader = Object.assign({"x-access-token" : user2.token}, header), userCat = false;
+    chai.request(server)
+      .get('/courses/all')
+      .set(nheader)
+      .end(function (err,res) {
+        for (var i = 0; i < res.body.length; i++) {
+          if (res.body[i].name === newUserCourse) {
+            userCat = true;
+          }
+        }
+        if (userCat)
+        res.should.have.status(200);
+        else
+        res.should.have.status(504);
+        done();
+      });
+  });
+
   /** User cannot delete courses */
-  it("Super user should be able to delete the course", function (done) {
+  it("user should not be able to delete the course", function (done) {
     var nheader = Object.assign({"x-access-token" : user2.token}, header);
     chai.request(server)
       .delete('/courses')
