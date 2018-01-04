@@ -7,5 +7,6 @@ module.exports = {
 	"duplicateData":{"status":409,"message":"Duplicate Data"},
 	"noData":{"status": 200,"message":"no content"},
 	"invalidData":{"status":406, "message":"Invalid or incomplete data"},
-
+	"notEnrolled":{"status": 401, "message":"Sorry, you do not have permissions to do this operation, please Enroll before starting the Topic"},
+	"inprogress" : {"status" : 403, "message" : "Event in progress, cannot reinitiate"}
 }

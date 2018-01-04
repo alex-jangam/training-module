@@ -113,9 +113,11 @@ module.exports = function (dao, config) {
 
 		function removeMany(req, res, next) {
       var data = req.body;
-      if (generic.checkFields(data, "code")) {
-        dao.courses.removeMany(data.code).then(function (err1, data1) {
-          generic.gCall(err1, data1, res);
+      if (generic.checkFields(data, "course")) {
+        dao.courses.removeMany(data.course).then(function (err1, data1) {
+					dao.topics.removeCourse(data.course)
+        }).then(function (err1, data1) {
+					generic.gCall(err1, data1, res);
         });
       } else {
         res.status(emsg.invalidData.status).send(emsg.invalidData);
@@ -127,9 +129,9 @@ module.exports = function (dao, config) {
 		}
 
 		function adminRequest(req, res, next) {
-			var data = req.params, user = req.user;
-			if (generic.checkFields(data, "code")) {
-				dao.courses.getCourseCodeName(data.code, user.username).then(function (err, resp) {
+			var data = req.params, user = req.user, username = user.username;
+			if (generic.checkFields(data, "course")) {
+				dao.courses.getCourseCodeName(data.course, username).then(function (err, resp) {
 					if (err) {
 						generic.gCall(err, resp, res);
 					} else if (!resp) {
@@ -148,8 +150,8 @@ module.exports = function (dao, config) {
 
 		function enrollRequest(req, res, next) {
 			var data = req.params, user = req.user;
-			if (generic.checkFields(data, "code")) {
-				dao.courses.getCourseCodeName(data.code, "").then(function (err, resp) {
+			if (generic.checkFields(data, "course")) {
+				dao.courses.getApprovedCourse(data.course).then(function (err, resp) {
 					if (err) {
 						generic.gCall(err, resp, res);
 					} else if (!resp) {

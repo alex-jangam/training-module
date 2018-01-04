@@ -43,9 +43,19 @@ schema.methods.findByName = function (name) {
     return newProm.prom;
 };
 
+schema.methods.findByCodeApproved = function (code) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code,user : "", approved : true}, newProm.post).sort({user: -1});
+    return newProm.prom;
+};
 schema.methods.findByCodeName = function (code, user) {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({ code : code, user : user || ""}, newProm.post);
+    this.model(collection).findOne({ code : code, user : user}, newProm.post).sort({user: -1});
+    return newProm.prom;
+};
+schema.methods.findByCodeNameApproved = function (code, user) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code, $or : [{user : user }, {user : "", approved : true}]}, newProm.post).sort({user: -1});
     return newProm.prom;
 };
 
@@ -63,7 +73,7 @@ schema.methods.getCount = function (category) {
 
 schema.methods.findLatest = function () {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({}).sort({created : -1}).limit( 5 ).exec(newProm.post);
+    this.model(collection).findOne({}).sort({code: -1, created : -1}).limit( 5 ).exec(newProm.post);
     return newProm.prom;
 };
 
@@ -97,10 +107,10 @@ schema.methods.findAll = function (category, name, page, count) {
         query = {
              category : category,
             "$or": [
-                {user: name},
-                {user : "", approved : true},
+              {user: name},
+              {user : "", approved : true},
             ]
-        }, sort = {user : 1}, aggList;
+        }, sort = {user : -1}, aggList;
         aggList = aggr.getUnique(query, "code", sort, defKeys);
     this.model(collection).aggregate(aggList).exec(newProm.post);
     return newProm.prom;

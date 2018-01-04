@@ -9,7 +9,7 @@ var constants = require("../config");
 var utils = require("../plugins/utils");
 chai.use(chaiHttp);
 
-var rndm = utils.random(5),
+var rndm = utils.random(5), addlog = 0, dellog = 0,
     superuser = {
         "username": "superadmin@training.com",
         "password": "password"
@@ -47,7 +47,7 @@ var rndm = utils.random(5),
 
   Test conditions:
   * Add course11 by superuser in catogory1
-  * Add course20 in catogory2 shall fail by superuser
+  * Add course20 in catogory2 shall not fail by superuser
   * Add course21 in category2 by user1 before approve
   * User2 shall not see course21
   * superuser shall approve catogory2 (runtime pre condition not a test)
@@ -142,14 +142,14 @@ describe("Catogory Operations", function () {
       .set(nheader)
       .send(newCourse)
       .end(function(err,res){
-        console.log("added", res.body.name, res.body.code);
+        console.log("added", res.body, res.status, newCourse);
         newSUserCourseCode = res.body.code;
         res.should.have.status(200);
         done();
       });
   })
 
-  /** Add course20 in catogory2 shall fail by superuser */
+  /** Add course20 in catogory2 shall not fail by superuser */
   it("Super user should be able to add course in user created catogory", function (done) {
     var nheader = Object.assign({"x-access-token" : superuser.token}, header);
     var newCourse = {
@@ -161,8 +161,11 @@ describe("Catogory Operations", function () {
       .set(nheader)
       .send(newCourse)
       .end(function(err,res){
-        console.log("adding to fail", res.body.name, res.body.code);
+        if (res.status != 200) {
+          console.log("adding to fail", res.status, res.body, newCourse);
+        }
         tempCourseCode = res.body.code;
+        console.log(tempCourseCode)
         res.should.have.status(200);
         done();
       });
@@ -175,9 +178,11 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .delete('/courses/all')
       .set(nheader)
-      .send({code : tempCourseCode})
+      .send({course : tempCourseCode})
       .end(function(err,res){
-        console.log("Delete", tempCourseCode, JSON.stringify(res.body));
+        if (res.status != 200) {
+          console.log("Delete", tempCourseCode, JSON.stringify(res.body));
+        }
         res.should.have.status(200);
         done();
       });
@@ -196,7 +201,9 @@ describe("Catogory Operations", function () {
       .set(nheader)
       .send(newCourse)
       .end(function(err,res){
-        console.log("added ", res.body.name, res.body.code);
+        if (res.status != 200) {
+          console.log("added ", res.body, newCourse);
+        }
         tempCourseCode = res.body.code;
         res.should.have.status(200);
         done();
@@ -208,9 +215,11 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .delete('/courses/all')
       .set(nheader)
-      .send({code : tempCourseCode})
+      .send({course : tempCourseCode})
       .end(function(err,res){
-        console.log("Delete", tempCourseCode, JSON.stringify(res.body));
+        if (res.status != 200) {
+          console.log("Delete", tempCourseCode, JSON.stringify(res.body));
+        }
         res.should.have.status(200);
         done();
       });
@@ -245,7 +254,9 @@ describe("Catogory Operations", function () {
       .set(nheader)
       .send(newCourse)
       .end(function(err,res){
-        console.log("adding", res.body.name, res.body.code);
+        if (res.status != 200) {
+          console.log("adding", res.body.name, res.body.code);
+        }
         newUserCourseCode = res.body.code;
         res.should.have.status(200);
         done();
@@ -264,7 +275,9 @@ describe("Catogory Operations", function () {
       .set(nheader)
       .send(newCourse)
       .end(function(err,res){
-        console.log("adding to fail", res.body.name, res.body.code);
+        if (res.status != 409) {
+          console.log("adding to fail", res.body);
+        }
         tempCourseCode = res.body.code;
         res.should.have.status(409);
         done();
@@ -277,7 +290,7 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .get('/courses/request')
       .set(nheader)
-      .query({code : newSUserCourseCode})
+      .query({course : newSUserCourseCode})
       .end(function (err,res) {
         res.should.have.status(406);
         done();
@@ -290,7 +303,7 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .get('/courses/enroll')
       .set(nheader)
-      .query({code : newSUserCourseCode})
+      .query({course : newSUserCourseCode})
       .end(function (err,res) {
         console.log("Enroll", JSON.stringify({code : newSUserCourseCode}));
         res.should.have.status(200);
@@ -304,7 +317,7 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .get('/courses/request')
       .set(nheader)
-      .query({code : newSUserCourseCode})
+      .query({course : newSUserCourseCode})
       .end(function (err,res) {
         console.log("Admin Req", JSON.stringify(res.body));
         res.should.have.status(200);
@@ -397,7 +410,7 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .get('/courses/enroll')
       .set(nheader)
-      .query({code : newUserCourseCode})
+      .query({course : newUserCourseCode})
       .end(function (err,res) {
         console.log("Enroll 2", JSON.stringify({code : newUserCourseCode}));
         res.should.have.status(200);
@@ -448,7 +461,7 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .delete('/courses/all')
       .set(nheader)
-      .send({code : newSUserCourseCode})
+      .send({course : newSUserCourseCode})
       .end(function(err,res){
         console.log("Delete", newSUserCourseCode, JSON.stringify(res.body));
         res.should.have.status(200);
@@ -461,7 +474,7 @@ describe("Catogory Operations", function () {
     chai.request(server)
       .delete('/courses/all')
       .set(nheader)
-      .send({code : newUserCourseCode})
+      .send({course : newUserCourseCode})
       .end(function(err,res){
         console.log("Delete", newUserCourseCode, JSON.stringify(res.body));
         res.should.have.status(200);

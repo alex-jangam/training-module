@@ -8,4 +8,5 @@ module.exports = function (app, dao, config) {
   require("./users")(app, dao, config);
   require("./category")(app, dao, config);
   require("./courses")(app, dao, config);
+  require("./topic")(app, dao, config);
 }

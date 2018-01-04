@@ -10,7 +10,7 @@ module.exports = function (app, dao, config) {
   app.get("/courses/request", auth, action.adminRequest);//course={{code}}
   app.get("/courses/enroll", auth, action.enroll);//course={{code}}
   app.put("/courses/approve", auth, action.approve);//
-  app.delete("/courses", auth, action.remove);// {name : '{{course code}}'}
-  app.delete("/courses/all", auth, action.removeMany);// {name : '{{course code}}'}
+  app.delete("/courses", auth, action.remove);// {user: user, course : '{{course code}}'}
+  app.delete("/courses/all", auth, action.removeMany);// {course : '{{course code}}'}
 
 }

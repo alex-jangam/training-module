@@ -41,7 +41,13 @@ module.exports.authorizedroles = {
 	"/courses:POST" : [superu, admin],
 	"/courses:DELETE" : [superu],
 	"/courses/all:DELETE" : [superu],
-	"/courses/approve:PUT" : onlysu
+	"/courses/approve:PUT" : onlysu,
+
+	"/topic:POST": [superu, admin],
+	"/topics:GET": [superu, admin, user],
+	"/topic/start:PUT": [superu, admin, user],
+	"/topic:DELETE": [superu, admin],
 }
 
 module.exports.excempt = ["/users/token", "/users/register"]
+module.exports.topicstates = ["start", "inprogress", "pending", "ended"];

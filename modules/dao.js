@@ -4,7 +4,8 @@
 
 var users = require("../schema/users"),
     category = require("../schema/category"),
-    courses = require("../schema/courses");
+    courses = require("../schema/courses"),
+    topics = require("../schema/topic");
 
 
 module.exports.user = {
@@ -54,7 +55,7 @@ module.exports.category = {
 };
 
 module.exports.courses = {
-    getLast : function (page, count) {
+    getLast : function () {
         return courses.query.findLatest();
     },
     getCourse : function (name) {
@@ -63,8 +64,14 @@ module.exports.courses = {
     getCourseCode : function (code) {
       return courses.query.findByCode(code);
     },
+    getApprovedCourse : function (code) {
+      return courses.query.findByCodeApproved(code);
+    },
     getCourseCodeName : function (code, name) {
       return courses.query.findByCodeName(code, name);
+    },
+    getCourseCodeNameOrApproved : function (code, name) {
+      return courses.query.findByCodeNameApproved(code, name);
     },
     add : function (name, code, category, suffix, user, role, approved, time) {
         return courses.add(name, code, category, suffix, user, role, approved, time)
@@ -96,3 +103,30 @@ module.exports.courses = {
     },
 
 };
+
+module.exports.topics = {
+  getLast : function () {
+      return topics.query.findLatest();
+  },
+  getName : function (name) {
+      return topics.query.findByName(name);
+  },
+  getTopic : function (code) {
+      return topics.query.findByCode(code);
+  },
+  getTopicOptUser : function (code, user) {
+      return topics.query.findByCodeOptUser(code, user);
+  },
+  add : function (name, code, course, coursecode, suffix, user, role, status) {
+    return topics.add(name, code, course, coursecode, suffix, user, role, status);
+  },
+  getAll : function (course, name, page, count) {
+    return topics.query.findAll(course, name, page, count);
+  },
+  removeCourse : function (coursecode) {
+    return topics.query.findCourseAndRemoveMany(coursecode);
+  },
+  removeMany : function (code) {
+      return topics.query.findAndRemoveMany(code);
+  },
+}

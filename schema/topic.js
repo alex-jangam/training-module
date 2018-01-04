@@ -20,11 +20,13 @@ var schema = new Schema({
     "name" : String, //Topic is the Courses topic in which questions will come up
     "code" : String, //Topic code which is auto generated
     "course" : String, //Under which course this topic has to appear
+    "coursename" : String,
     "suffix" : String, //Suffix for topic to display
     "count" : Number, //Number of questions in the topic
     "user" : String, //User name who has registered to the topic
     "approved" : Boolean, //State of approval - To be approved by admin.
     "submitted" : Boolean, // Submit is state of the topic, once submitted it goes for admin to review
+    "status" : String,//Status varies from started, inprogress, pending to Ended.
     "guides" : [String],//Add related links
     "role" : String //role of the user
 }, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
@@ -38,7 +40,31 @@ var collection = 'topic',
 
 schema.methods.findByName = function (name) {
     var newProm = utils.getpromise();
-    this.model(collection).findOne({ username : utils.noCase(name)}, newProm.post);
+    this.model(collection).findOne({ name : name}, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.findByCode = function (code) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code, user : ""}, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.findByCodeOptUser = function (code, user) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code, $or : [{user : user}, {user : ""}] }, newProm.post).sort({user : -1});
+    return newProm.prom;
+};
+
+schema.methods.findByCodeName = function (code, user) {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({ code : code, user : user}, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.findLatest = function () {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({}).sort({created : -1}).exec(newProm.post);
     return newProm.prom;
 };
 
@@ -54,32 +80,53 @@ schema.methods.findById = function (id) {
     return newProm.prom;
 };
 
-schema.methods.findAll = function (page, count) {
+schema.methods.findAll = function (course, user, page, count) {
     var newProm = utils.getpromise(),
-        query = {approved : true},
-        pagequery = utils.paginate(),
+        query = {course: course,
+          "$or": [
+            {user: user},
+            {user : ""},
+          ]}, pagequery = utils.paginate(), aggList;
+        if (!course) {
+          delete query.course;
+        }
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
     return newProm.prom;
 };
 
 
-schema.methods.findAndRemove = function (username) {
+schema.methods.findAndRemove = function (user, code) {
     var newProm = utils.getpromise();
-    this.model(collection).findOneAndRemove({username : utils.noCase(username)}, newProm.post);
+    this.model(collection).findOneAndRemove({user: user, code : code}, newProm.post);
     return newProm.prom;
 };
 
+schema.methods.findCourseAndRemoveMany = function (coursecode) {
+    var newProm = utils.getpromise();
+    this.model(collection).remove({course : coursecode}, newProm.post);
+    return newProm.prom;
+};
+schema.methods.findAndRemoveMany = function (code) {
+    var newProm = utils.getpromise();
+    this.model(collection).remove({code : code}, newProm.post);
+    return newProm.prom;
+};
 
 var SchemaModel = mongooseClient.model(collection, schema);
 
 module.exports.query = new SchemaModel();// Export the whole 'schema' with all the methods
-module.exports.add = function (name, category, suffix) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function (name, code, course, coursecode,suffix, user, role, status) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var newProm = utils.getpromise(), ObModel = {
         "name" : name,
-        "category" : category,
+        "code" : code,
+        "coursename" : course,
+        "course" : coursecode,
         "suffix" : suffix,
-        "count" : 0
+        "count" : 0,
+        "user" : user || "",
+        "role" : role || "",
+        "status" : status || "",
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;
