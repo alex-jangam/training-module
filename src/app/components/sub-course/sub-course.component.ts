@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {Router, ActivatedRoute } from '@angular/router';
+import {MdDialog, MdDialogRef} from '@angular/material';
 import {SubCoursesService} from 'app/services/sub-courses/sub-courses.service';
+import {AddTopicComponent} from 'app/modals/add-topic/add-topic.component';
+import {LocalstoreService} from 'app/services/localStore/localstore.service';
+import * as config from 'app/services/config/config.service';
 
 @Component({
   selector: 'app-sub-course',
@@ -8,14 +12,18 @@ import {SubCoursesService} from 'app/services/sub-courses/sub-courses.service';
   styleUrls: ['./sub-course.component.scss']
 })
 export class SubCourseComponent implements OnInit {
-  categoryId: any;
+  courseId: any;
   tiles:any[] = [];
-  constructor(private router: Router, private route: ActivatedRoute,private http : SubCoursesService) { }
+  isAdmin: any;
+  isSuper: any;
+  constructor(private router: Router, private route: ActivatedRoute, public dialog: MdDialog, private lStore: LocalstoreService, private http : SubCoursesService) { }
 
   ngOnInit() {
+    let user = this.lStore.getItem("user");
+    this.isSuper = (user.role === config.SA);
     this.route.params.subscribe(params => {
-       this.categoryId = +params['id']; // (+) converts string 'id' to a number
-       this.getCourses(params['id'] || "all")
+       this.courseId = params['id']; // (+) converts string 'id' to a number
+       this.getCourses(params['id'])
     });
   }
 
@@ -24,10 +32,28 @@ export class SubCourseComponent implements OnInit {
   }
 
   listCourses(result){
-    this.tiles = result;
+    let resp = (result || {}), data = resp.data || {};
+    this.tiles = resp.all || [];
+    this.isAdmin = (this.isSuper || (data.role == config.ADMIN));
   }
 
   openCourse(code:string){
     this.router.navigate(['/topic', code]);
+  }
+
+  addTopic(){
+    let dialogRef = this.dialog.open(AddTopicComponent,{
+      data: {course: this.courseId},
+      width: '450px'});
+    dialogRef.afterClosed().subscribe(result => {
+      if(result){
+        result.created = new Date(result.created);
+        this.tiles.push(result);
+      }
+    });
+  }
+
+  startTopic(topic){
+
   }
 }

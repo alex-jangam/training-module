@@ -34,6 +34,8 @@ import { SubCourseComponent } from './components/sub-course/sub-course.component
 import { TopicComponent } from './components/topic/topic.component';
 import { OverlayComponent } from './components/overlay/overlay.component';
 import { AddCourseComponent } from './modals/add-course/add-course.component';
+import { AddTopicComponent } from 'app/modals/add-topic/add-topic.component';
+import { RedirectComponent } from './components/redirect/redirect.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,9 @@ import { AddCourseComponent } from './modals/add-course/add-course.component';
     SubCourseComponent,
     TopicComponent,
     OverlayComponent,
-    AddCourseComponent
+    AddCourseComponent,
+    AddTopicComponent,
+    RedirectComponent
   ],
   imports: [
     BrowserModule,
@@ -72,7 +76,8 @@ import { AddCourseComponent } from './modals/add-course/add-course.component';
   bootstrap: [AppComponent],
   entryComponents: [
     AddCategoryComponent,
-    AddCourseComponent
+    AddCourseComponent,
+    AddTopicComponent
   ]
 })
 export class AppModule { }

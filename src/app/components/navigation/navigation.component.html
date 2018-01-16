@@ -6,12 +6,12 @@
     routerLinkActive="active" > {{link.name}} </a>
   </nav> -->
 
-  <nav md-tab-nav-bar class="navbar navbar-toggleable-md navbar-light bg-faded no-pad ">
+  <nav md-tab-nav-bar class="navbar navbar-toggleable-md navbar-light bg-faded no-pad training-nav">
     <button class="navbar-toggler" md-icon-button [mdMenuTriggerFor]="menu">
       <md-icon >more_vert</md-icon>
     </button>
     <md-menu #menu="mdMenu">
-      <button md-menu-item *ngFor="let link of navOptions" [routerLink]="link.path" routerLinkActive="active">
+      <button md-menu-item *ngFor="let link of navOptions" [routerLink]="link.path" routerLinkActive="active" [disabled]="link.disabled">
         <span>{{link.name}}</span>
       </button>
       <button md-menu-item [routerLink]="login" >
@@ -22,7 +22,7 @@
     <div class="collapse navbar-collapse ">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item" *ngFor="let link of navOptions" routerLinkActive="active">
-          <a  md-tab-link class="nav-link" [routerLink]="link.path" >{{link.name}}</a>
+          <a  md-tab-link class="nav-link" [routerLink]="link.path" [disabled]="link.disabled">{{link.name}}</a>
         </li>
       </ul>
       <ul class="navbar-nav fr">

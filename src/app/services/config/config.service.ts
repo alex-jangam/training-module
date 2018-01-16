@@ -23,3 +23,5 @@ export const loginPath = ("/").concat(loginRoute);
 export const invalidlogin = "Invalid login credentials";
 export const expireToken = "Please provide a valid token.";
 export const sessionExpire = "Session has expired, please re-login";
+
+export const notfound = 404;

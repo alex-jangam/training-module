@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4250",
+    "start": "ng serve --port 4350",
     "build": "ng build && node updater",
     "test": "ng test",
     "lint": "ng lint",

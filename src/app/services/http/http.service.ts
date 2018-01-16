@@ -61,11 +61,15 @@ export class HttpService {
             observer.complete();
           }, (err) => {
             this.servEnd(ser);
-            let erMsg = (err.json() || {}).message;
-            if(erMsg == config.sessionExpire || erMsg === config.expireToken) {
-              this.router.navigateByUrl(config.loginPath)
+            if (err.status === config.notfound) {
+              observer.error({message : "404 not found."});
+            } else {
+              let erMsg = (err.json() || {}).message;
+              if(erMsg == config.sessionExpire || erMsg === config.expireToken) {
+                this.router.navigateByUrl(config.loginPath)
+              }
+              observer.error(err.json());
             }
-            observer.error(err.json());
             observer.complete();
           })
         });

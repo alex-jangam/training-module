@@ -14,7 +14,10 @@ export class SubCoursesService extends HttpService{
   }
 
   public getSubCourses(course){
-      return this.httpGet(this.base + "/sub-courses", this.accessHeader, {category: course});
+      return this.httpGet(this.base + "/topics", this.accessHeader, {course: course});
+  }
+  public addTopic(topic, course){
+    return this.httpPost(this.base + "/topic", {name: topic,course : course},this.accessHeader, {});
   }
 
 }

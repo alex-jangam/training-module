@@ -28,4 +28,8 @@ export class CoursesService  extends HttpService{
   public approveCourse(user, code){
     return this.httpPut(this.base + "/courses/approve", {user: user, course : code}, this.accessHeader, {});
   }
+
+  public enrollCourse(code){
+    return this.httpGet(this.base + "/courses/enroll", this.accessHeader, {code: code});
+  }
 }

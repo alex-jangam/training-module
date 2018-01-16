@@ -7,6 +7,7 @@ import { LoginComponent } from 'app/components/login/login.component';
 import { DashboardComponent } from 'app/components/dashboard/dashboard.component';
 import { CategoryComponent } from 'app/components/category/category.component';
 import { CoursesComponent } from 'app/components/courses/courses.component';
+import { RedirectComponent } from 'app/components/redirect/redirect.component';
 import { SubCourseComponent } from 'app/components/sub-course/sub-course.component';
 import { TopicComponent } from 'app/components/topic/topic.component';
 
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: '', component: BaseComponent ,
   children: [
     { path: 'dashboard', component: DashboardComponent},
+    { path: 'course', component: RedirectComponent},
     { path: 'course/:category', component: CoursesComponent},
     { path: 'sub-course/:id', component: SubCourseComponent},
     { path: 'topic/:id', component: TopicComponent},

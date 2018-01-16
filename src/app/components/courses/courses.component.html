@@ -33,7 +33,7 @@
           </div>
           <div class="htfix"> </div>
 
-          <div class="clr" *ngIf="isSuper">
+          <div class="clr one-block" *ngIf="isSuper">
             <div class="col-4 col-sm-4">
               Status
             </div>
@@ -42,6 +42,17 @@
               <span *ngIf="tile.approved">Approved</span>
             </div>
           </div>
+          <div class="clr one-block" >
+            <div class="" *ngIf="!isSuper && tile.role == config.blank">
+              <div class="col-4 col-sm-4">
+                Action
+              </div>
+              <div class="col-sm-8 col-8">
+                : <button class="btn btn-info btn-sm cursor" type="button" name="button" (click)="enroll(tile)">Enroll</button>
+              </div>
+            </div>
+          </div>
+
           <div class="htfix"> </div>
         </md-card-content>
 

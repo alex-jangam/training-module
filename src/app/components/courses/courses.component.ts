@@ -4,6 +4,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {CoursesService} from 'app/services/courses/courses.service';
 import {LocalstoreService} from 'app/services/localStore/localstore.service';
 import * as config from 'app/services/config/config.service';
+import {UtilsService} from 'app/services/utils/utils.service';
 import {AddCourseComponent} from 'app/modals/add-course/add-course.component';
 
 
@@ -19,12 +20,13 @@ export class CoursesComponent implements OnInit {
   showAddCourse = false;
   isSuper: boolean = false;
   onapprove:boolean = false;
-  constructor(private router: Router, private route: ActivatedRoute,private http : CoursesService, public dialog: MdDialog, private lStore: LocalstoreService) { }
+  config: any;
+  constructor(private router: Router, private route: ActivatedRoute,private http : CoursesService, public dialog: MdDialog, private lStore: LocalstoreService, private utils: UtilsService) { }
 
   ngOnInit() {
     let user = this.lStore.getItem("user");
     this.isSuper = (user.role === config.SA);
-
+    this.config = this.utils.clone(config);
     this.route.params.subscribe(params => {
        if(params['category'] === config.all) {
          this.hasCategory = false;
@@ -46,7 +48,7 @@ export class CoursesComponent implements OnInit {
   }
 
   listCourses(result){
-    this.tiles = result;
+    this.tiles = this.utils.sort(result || {}, "role").reverse();
   }
 
   openCourse(code:string){
@@ -74,6 +76,12 @@ export class CoursesComponent implements OnInit {
     this.http.approveCourse(course.user, course.code).subscribe((resp:any) =>{
       course.approved = resp.approved;
       this.onapprove = false;
+    });
+  }
+
+  enroll(course){
+    this.http.enrollCourse(course.code).subscribe((resp:any) =>{
+      course.role = config.ADMIN;
     });
   }
 }

@@ -7,12 +7,15 @@
 	z-index: 100;
 }
 
-.nav-item.active .nav-link{
-		color: #0d230d;
+.training-nav.navbar-light .nav-item.active .nav-link{
+		color: #009200;
 }
 .nav-link{
 
 }
 /deep/ .mat-tab-links{
 	width: 100%;
+}
+.training-nav.navbar-light .navbar-nav .nav-link{
+	color: #191717;
 }
