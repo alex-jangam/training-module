@@ -115,7 +115,9 @@ module.exports = function (dao, config) {
       var data = req.body;
       if (generic.checkFields(data, "course")) {
         dao.courses.removeMany(data.course).then(function (err1, data1) {
-					dao.topics.removeCourse(data.course)
+					dao.topics.removeCourse(data.course).then(function (err2, data2) {
+						//dao.questions.removeCourse(data.course)
+					})
         }).then(function (err1, data1) {
 					generic.gCall(err1, data1, res);
         });
@@ -137,7 +139,7 @@ module.exports = function (dao, config) {
 					} else if (!resp) {
 						res.status(emsg.invalidData.status).send(emsg.invalidData)
 					} else {
-						dao.courses.approveAdmin(user.name, resp.code).
+						dao.courses.approveAdmin(user.username, resp.code).
 						then(function (err2, resp2) {
 							generic.gCall(err2, resp2, res);
 						});

@@ -47,6 +47,11 @@ module.exports.authorizedroles = {
 	"/topics:GET": [superu, admin, user],
 	"/topic/start:PUT": [superu, admin, user],
 	"/topic:DELETE": [superu, admin],
+
+	"/question:POST": [superu, admin],
+	"/questions:GET": all,
+	"/question:DELETE": [superu, admin],
+
 }
 
 module.exports.excempt = ["/users/token", "/users/register"]

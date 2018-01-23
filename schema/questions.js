@@ -26,7 +26,7 @@ var schema = new Schema({
 
 
 var collection = 'questions';
-var paginate = 10, defKeys = ["question", "code", "course", "topic", "submitted", "guides", "created", "lastUpdated"],
+var paginate = 10, defKeys = ["question", "code", "course", "topic", "guides", "created", "lastUpdated"],
     sortItem = {item : "priority", order : 1};
 
 schema.methods.findByName = function (name) {
@@ -47,9 +47,15 @@ schema.methods.findById = function (id) {
     return newProm.prom;
 };
 
-schema.methods.findAll = function (page, count) {
+schema.methods.findLatest = function () {
+    var newProm = utils.getpromise();
+    this.model(collection).findOne({}).sort({created : -1}).exec(newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.findAll = function (topic, page, count) {
     var newProm = utils.getpromise(),
-        query = {approved : true},
+        query = {topic : topic},
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
@@ -58,9 +64,9 @@ schema.methods.findAll = function (page, count) {
 };
 
 
-schema.methods.findAndRemove = function (username) {
+schema.methods.findAndRemove = function (questionCode) {
     var newProm = utils.getpromise();
-    this.model(collection).findOneAndRemove({username : utils.noCase(username)}, newProm.post);
+    this.model(collection).findOneAndRemove({code : questionCode}, newProm.post);
     return newProm.prom;
 };
 
@@ -82,8 +88,8 @@ module.exports.add = function (question, topic, course, code, priority, guides) 
         "topic" : topic,
         "course" : course,
         "code" : code,
-        "priority" : priority,
-        "guides" : guides
+        "priority" : priority || 0,
+        "guides" : guides || []
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;

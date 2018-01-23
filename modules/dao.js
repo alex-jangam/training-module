@@ -5,7 +5,8 @@
 var users = require("../schema/users"),
     category = require("../schema/category"),
     courses = require("../schema/courses"),
-    topics = require("../schema/topic");
+    topics = require("../schema/topic"),
+    questions = require("../schema/questions");
 
 
 module.exports.user = {
@@ -129,4 +130,32 @@ module.exports.topics = {
   removeMany : function (code) {
       return topics.query.findAndRemoveMany(code);
   },
+}
+
+module.exports.questions = {
+  getLast : function () {
+      return questions.query.findLatest();
+  },
+  add : function (question, topic, course, code, priority, guides) {
+    return questions.add(question, topic, course, code, priority, guides);
+  },
+  getAll : function (topic, page, count) {
+    return questions.query.findAll(topic, page, count);
+  },
+  remove : function (questionCode) {
+    return questions.query.findAndRemove(questionCode);
+  },
+  /*/
+  getName : function (name) {
+      return questions.query.findByName(name);
+  },
+  getTopic : function (code) {
+      return questions.query.findByCode(code);
+  },
+  getTopicOptUser : function (code, user) {
+      return questions.query.findByCodeOptUser(code, user);
+  },
+  removeMany : function (code) {
+      return questions.query.findAndRemoveMany(code);
+  },//*/
 }

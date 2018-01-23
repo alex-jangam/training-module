@@ -1,5 +1,5 @@
 /*globals require, module, console, exports, describe */
-//Topics or Sub Courses
+//Topic : Contains Questions
 require('./portconfig')();
 var chai = require('chai');
 var chaiHttp = require('chai-http');
@@ -34,7 +34,9 @@ var rndm = utils.random(5),
     newSUserCatogoryCode, newUserCatogoryCode,
     newSUserCourseCode, newUserCourseCode,
     topic1 = "test-topic1-" + utils.random(3), topic1Code,
-    topic2 = "test-topic2-" + utils.random(3), topic2Code;
+    topic2 = "test-topic2-" + utils.random(3), topic2Code,
+    question1 = "Question number one", q1code,
+    question2 = "Question number two", q2code;
 
 /** Pre conditions:
   * superuser login
@@ -43,23 +45,22 @@ var rndm = utils.random(5),
   * Add course11 by superuser in catogory1
   * User1 can enroll to course11 a superuser created course
   * User1 can ask admin rights from Superuser for course11
-
-  Test conditions:Sub-Course is Topic
-  * Create Topic by Superuser (topic2)
-  * Create Topic(topic1) by User(user1) with admin rights.
-  * Create Duplicate Topic(topic1) under same course by User(user1) with admin rights shall fail.
-  * Create Topic(topic3) under by Admin User(user1) for Invalid Course shall fail.
-  * Create Topic by Non Admin(user2) shall fail.
-  * Non Admin Users(user2) shall see Topics without enrolling for Course(user2 shall see topic1).
-  * Non Admin(user2) cannot delete Topic(topic1)
-  * Non Admin(user2) cannot start a topic without enrolling to its course.
+  * Create Topic by Superuser (topic1)
   * Non Admin(user2) can enroll to its course.
   * Non Admin(user2) can start the topic after enrolling.
-  * Non Admin(user2) cannot start the started topic.
-  * Admin can delete Topic(topic1)
-  * Superuser can delete Topic(topic2)
+
+  Test conditions:Sub-Course is Topic
+  * Super admin can Add Questions in a topic.
+  * Admin can add a question
+  * User can not add a question
+  * Super admin can Open Questions in a topic.
+  * Admin(user1) can open Questions in a topic without starting.
+  * User cannot open Questions withouc starting the topic.
+  * Superuser can delete Question(q1code)
+  * User can delete Question(q2code)
 
   * Post conditions:
+  * Superuser can delete Topic(topic2)
     Delete courses created for testing.
     Delete catogories created for testing.
   *Note: Use TEST category for course functions.
@@ -167,15 +168,12 @@ describe("Catogory Operations", function () {
       });
   });
 
-  /* Main Test cases for courses.////////////////////////////////////////////////////////*/
-  // Test conditions:
-
-  /* Create Topic by Superuser (topic2) */
+  /* Create Topic by Superuser (topic1) */
   it("Superuser should be able to create Topic", function (done) {
     var nheader = Object.assign({"x-access-token" : user.token}, header);
     var newTopic = {
       course : newSUserCourseCode,
-      name: topic2
+      name: topic1
     }
     chai.request(server)
       .post('/topic')
@@ -185,151 +183,10 @@ describe("Catogory Operations", function () {
         if (res.status != 200) {
           console.log("Sper Admin Req", JSON.stringify(res.body));
         }
-        topic2Code = res.body.code;
-        res.should.have.status(200);
-        done();
-      });
-  });
-
-  /* Create Topic(topic1) by User(user1) with admin rights. */
-  it("user should be able to create topic", function (done) {
-    var nheader = Object.assign({"x-access-token" : user.token}, header);
-    var newTopic = {
-      course : newSUserCourseCode,
-      name: topic1
-    }
-    chai.request(server)
-      .post('/topic')
-      .set(nheader)
-      .send(newTopic)
-      .end(function(err,res){
-        if (res.status != 200) {
-          console.log("Admin Req", JSON.stringify(res.body));
-        }
         topic1Code = res.body.code;
         res.should.have.status(200);
         done();
       });
-  })
-
-  /* Create Duplicate Topic(topic1) under same course by User(user1) with admin rights shall fail. */
-  it("admin user should not be able to create topic with existing name", function (done) {
-    var nheader = Object.assign({"x-access-token" : user.token}, header);
-    var newTopic = {
-      course : newSUserCourseCode,
-      name: topic1
-    }
-    chai.request(server)
-      .post('/topic')
-      .set(nheader)
-      .send(newTopic)
-      .end(function(err,res){
-        if (res.status != 409) {
-          console.log("Admin Req", JSON.stringify(res.body));
-        }
-        res.should.have.status(409);
-        done();
-      });
-  })
-  /* Create Topic(topic3) under by Admin User(user1) for Invalid Course shall fail. */
-  it("admin user should not be able to create topic with invalid course", function (done) {
-    var nheader = Object.assign({"x-access-token" : user.token}, header);
-    var newTopic = {
-      course : newSUserCourseCode + "a",
-      name: topic1 + "a"
-    }
-    chai.request(server)
-      .post('/topic')
-      .set(nheader)
-      .send(newTopic)
-      .end(function(err,res){
-        if (res.status != 401) {
-          console.log("Admin Req", JSON.stringify(res.body));
-        }
-        res.should.have.status(401);
-        done();
-      });
-  })
-
-  /* Create Topic by Non Admin(user2) shall fail. */
-  it("non admin user should not be able to create topic", function (done) {
-    var nheader = Object.assign({"x-access-token" : user2.token}, header);
-    var newTopic = {
-      course : newSUserCourseCode,
-      name: topic1 + "b"
-    }
-    chai.request(server)
-      .post('/topic')
-      .set(nheader)
-      .send(newTopic)
-      .end(function(err,res){
-        if (res.status != 401) {
-          console.log("Admin Req", JSON.stringify(res.body));
-        }
-        res.should.have.status(401);
-        done();
-      });
-  })
-
-  /* Non Admin Users(user2) shall see Topics without enrolling for Course(user2 shall see topic1). */
-  it("non admin user should be able see topics for non enrolled courses", function (done) {
-    var nheader = Object.assign({"x-access-token" : user2.token}, header);
-    var newTopic = {
-      course : newSUserCourseCode,
-    }
-    chai.request(server)
-      .get('/topics')
-      .set(nheader)
-      .query(newTopic)
-      .end(function(err,res){
-        var resps = (res.body || {}).all || [], hasTop = false;
-        for (var i = 0; i < resps.length; i++) {
-          if (resps[i].code === topic1Code)hasTop = true;
-        }
-        if (hasTop) {
-          res.should.have.status(200);
-        } else {
-          res.should.have.status(406);
-          if (res.status != 200 || !hasTop) {
-            console.log("Admin Req", JSON.stringify(res.body));
-          }
-        }
-        done();
-      });
-  })
-  /* Non Admin(user2) cannot delete Topic(topic1) */
-  it("Non Admin User should not be able to delete Topic", function (done) {
-    var nheader = Object.assign({"x-access-token" : user2.token}, header);
-    var newTopic = {
-      topic: topic1Code
-    }
-    chai.request(server)
-      .delete('/topic')
-      .set(nheader)
-      .send(newTopic)
-      .end(function (err,res) {
-        if (res.status != 401) {
-          console.log("Admin Req", JSON.stringify(res.body));
-        }
-        res.should.have.status(401);
-        done();
-      });
-  });
-
-  /* Non Admin(user2) cannot start a topic without enrolling to its course.*/
-  it("User2 should be able to start for a topic", function (done) {
-    var nheader = Object.assign({"x-access-token" : user2.token}, header);
-    chai.request(server)
-    .put('/topic/start')
-    .set(nheader)
-    .send({topic : topic1Code})
-    .end(function (err,res) {
-      if (res.status != 401) {
-        console.log("Enroll", JSON.stringify(res.body));
-      }
-      res.should.have.status(401);
-      done();
-    });
   });
 
   /* Non Admin(user2) can enroll to its course.*/
@@ -348,7 +205,132 @@ describe("Catogory Operations", function () {
     });
   });
 
-  /* Non Admin(user2) can start the topic after enrolling.*/
+
+  /* Main Test cases for Topic(Sub-Course is Topic).////////////////////////////////////////////////////////*/
+  /* Super admin can Add Questions in a topic */
+  it("Super admin can Add Questions in a topic", function (done) {
+    var nheader = Object.assign({"x-access-token" : superuser.token}, header);
+    var newQuestion1 = {
+      question : question1,
+      topic: topic1Code
+    }
+    chai.request(server)
+      .post('/question')
+      .set(nheader)
+      .send(newQuestion1)
+      .end(function (err,res) {
+        if (res.status != 200) {
+          console.log("Superuser Req", JSON.stringify(res.body));
+        } else {
+          q1code = res.body.code
+        }
+        res.should.have.status(200);
+        done();
+      });
+  });
+  /* Admin can add a question */
+  it(" Admin(user1) can Add Questions in a topic with guides", function (done) {
+    var nheader = Object.assign({"x-access-token" : user.token}, header);
+    var newQuestion2 = {
+      question : question2,
+      topic: topic1Code,
+      guides : ["http://www.google.com"]
+    }
+    chai.request(server)
+      .post('/question')
+      .set(nheader)
+      .send(newQuestion2)
+      .end(function (err,res) {
+        if (res.status != 200) {
+          console.log("User Req", JSON.stringify(res.body));
+        } else {
+          q2code = res.body.code
+        }
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  /* User can not add a question */
+  it(" User(user2)) can not add Questions in a topic", function (done) {
+    var nheader = Object.assign({"x-access-token" : user2.token}, header);
+    var newQuestion2 = {
+      question : question2,
+      topic: topic1Code,
+      guides : ["http://www.google.com"]
+    }
+    chai.request(server)
+      .post('/question')
+      .set(nheader)
+      .send(newQuestion2)
+      .end(function (err,res) {
+        if (res.status != 401) {
+          console.log("User Req", JSON.stringify(res.body));
+        }
+        res.should.have.status(401);
+        done();
+      });
+  });
+
+  /* Super admin can Open Questions in a topic.*/
+  it("Superuser should be able to get Questions for Topic", function (done) {
+    var nheader = Object.assign({"x-access-token" : superuser.token}, header);
+    var newTopic = {
+      topic: topic1Code
+    }
+    chai.request(server)
+      .get('/questions')
+      .set(nheader)
+      .query(newTopic)
+      .end(function (err,res) {
+        if (res.status != 200) {
+          console.log("Superuser Req", JSON.stringify(res.body));
+        }
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  /* Admin(user1) can open Questions in a topic without starting.*/
+  it("Admin should be able to get Questions for Topic", function (done) {
+    var nheader = Object.assign({"x-access-token" : user.token}, header);
+    var newTopic = {
+      topic: topic1Code
+    }
+    chai.request(server)
+      .get('/questions')
+      .set(nheader)
+      .query(newTopic)
+      .end(function (err,res) {
+        if (res.status != 200) {
+          console.log("User Req", JSON.stringify(res.body));
+        }
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+
+  /* User cannot open Questions withouc starting the topic.*/
+  it("User(user2) should not be able to get Questions withouc starting the topic", function (done) {
+    var nheader = Object.assign({"x-access-token" : user2.token}, header);
+    var newTopic = {
+      topic: topic1Code
+    }
+    chai.request(server)
+    .get('/questions')
+    .set(nheader)
+    .query(newTopic)
+    .end(function (err,res) {
+      if (res.status != 401) {
+        console.log("User Req", JSON.stringify(res.body));
+      }
+      res.should.have.status(401);
+      done();
+    });
+  });
+
+  /* Non Admin(user2) can start the topic after enrolling: Part of Supprot event*/
   it("User2 should be able to start for a topic after enrolling", function (done) {
     var nheader = Object.assign({"x-access-token" : user2.token}, header);
     chai.request(server)
@@ -364,46 +346,71 @@ describe("Catogory Operations", function () {
     });
   });
 
-  /* Non Admin(user2) cannot start the started topic. */
-  it("User2 should not be able to start for a topic already started", function (done) {
+  /* User can open Questions after starting the topic.*/
+  it("User(user2) should not be able to get Questions withouc starting the topic", function (done) {
     var nheader = Object.assign({"x-access-token" : user2.token}, header);
-    chai.request(server)
-    .put('/topic/start')
-    .set(nheader)
-    .send({topic : topic1Code})
-    .end(function (err,res) {
-      if (res.status != 403) {
-        console.log("Enroll ", res.body);
-      }
-      res.should.have.status(403);
-      done();
-    });
-  });
-
-  /* Admin can delete Topic(topic1) */
-  it("Admin User should be able to delete Topic", function (done) {
-    var nheader = Object.assign({"x-access-token" : user.token}, header);
     var newTopic = {
       topic: topic1Code
     }
     chai.request(server)
-      .delete('/topic')
+    .get('/questions')
+    .set(nheader)
+    .query(newTopic)
+    .end(function (err,res) {
+      if (res.status != 200) {
+        console.log("User Req", JSON.stringify(res.body));
+      }
+      res.should.have.status(200);
+      done();
+    });
+  });
+
+  /* Superuser can delete Question(q1code) */
+  it("Superuser should be able to delete Question", function (done) {
+    var nheader = Object.assign({"x-access-token" : superuser.token}, header);
+    var qCode = {
+      question: q1code
+    }
+    chai.request(server)
+      .delete('/question')
       .set(nheader)
-      .send(newTopic)
+      .send(qCode)
       .end(function (err,res) {
         if (res.status != 200) {
-          console.log("Admin Req", JSON.stringify(res.body));
+          console.log("Superuser Req", JSON.stringify(res.body));
         }
         res.should.have.status(200);
         done();
       });
   });
 
-  /* Superuser can delete Topic(topic2) */
+  /* Superuser can delete Question(q1code) */
+  it("User should be able to delete Question", function (done) {
+    var nheader = Object.assign({"x-access-token" : superuser.token}, header);
+    var qCode = {
+      question: q2code
+    }
+    chai.request(server)
+      .delete('/question')
+      .set(nheader)
+      .send(qCode)
+      .end(function (err,res) {
+        if (res.status != 200) {
+          console.log("Superuser Req", JSON.stringify(res.body));
+        }
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  //*/
+  //Post conditions.
+
+  /* Superuser can delete Topic(topic1) */
   it("Superuser should be able to delete Topic", function (done) {
     var nheader = Object.assign({"x-access-token" : superuser.token}, header);
     var newTopic = {
-      topic: topic2Code
+      topic: topic1Code
     }
     chai.request(server)
       .delete('/topic')
@@ -418,7 +425,6 @@ describe("Catogory Operations", function () {
       });
   });
 
-  //Post conditions.
   /* Delete Course by super admin as above test is passed *///Post condition.//
   it("Super user should be able to delete the course", function (done) {
     var nheader = Object.assign({"x-access-token" : superuser.token}, header);

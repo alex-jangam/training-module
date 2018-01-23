@@ -9,4 +9,5 @@ module.exports = function (app, dao, config) {
   require("./category")(app, dao, config);
   require("./courses")(app, dao, config);
   require("./topic")(app, dao, config);
+  require("./questions")(app, dao, config);
 }

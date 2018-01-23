@@ -98,7 +98,7 @@ schema.methods.approve = function (user, course) {
 
 schema.methods.approveAdmin = function (user, course) {
     var newProm = utils.getpromise();
-    this.model(collection).findOneAndUpdate({ user : user, code : course, approved : true}, {role : config.admin}, newProm.post);
+    this.model(collection).findOneAndUpdate({ user : user, code : course, approved : true}, {role : config.admin}, {new: true}, newProm.post);
     return newProm.prom;
 };
 
