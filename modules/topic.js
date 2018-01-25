@@ -99,7 +99,7 @@ module.exports = function (dao, config) {
 									code = suffix + "-" + num;
 									dao.topics.add(data.name, code, course.name, course.code, (data.suffix || data.name).toLowerCase()).then(function (err2, resp2) {
 										generic.gCall(err2, resp2, res);
-									});
+									})
 								}
 						});
 				} else {
@@ -120,6 +120,17 @@ module.exports = function (dao, config) {
 			}
 		}
 
+		function getQCount(req, res, next) {
+				var course = req.params.course, qCounts = {};
+				dao.topics.getQuestionsCount(course).then(function (err, resp) {
+					var counts = resp || [];
+					for (var i = 0; i < counts.length; i++) {
+						qCounts[counts[i]._id] = counts[i].total;
+					}
+					next();
+				})
+		}
+
 		function getAll(req, res, next) {
 				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params, course = req.courseData || {};
 				if (isSuper) {
@@ -128,9 +139,12 @@ module.exports = function (dao, config) {
 				if (generic.checkFields(params, "course")) {
 					dao.topics.getAll(params.course, uName, params.page, params.count).
 					then(function (err, data) {
-						var udata = {role :  course.role || config.user}
-						data.data = udata;
-						generic.gCall(err, data, res)
+						var udata = {role :  course.role || config.user}, nData = data;
+						if (data.length == 0) {
+							nData = {all :  []}
+						}
+						nData.data = udata;
+						generic.gCall(err, nData, res);
 					}).error(function (err) {
 						console.log(err);
 					});
@@ -245,6 +259,7 @@ module.exports = function (dao, config) {
 				verifyTopic: validateTopic,
 				verifyAdminCourse : getOneCourse,
 				verifyCourse : getCourse,
+				count : getQCount,
 				approve : approve,
 				getAll : getAll,
 				registered : registered,

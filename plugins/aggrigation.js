@@ -20,15 +20,20 @@ module.exports = function () {
 				return aggList;
 		}
 
-		function getUniqueCount(parm) {
+		function getUniqueCount(parm, filter) {
+			var nFilter = filter;
+			if (typeof nFilter != "object" || Array.isArray(nFilter)) {
+				nFilter = {};
+			}
 			return  [
-				{ $match : {user : ""}},
+				{ $match : Object.assign({user : ""}, nFilter)},
 				{ $group : { _id : ("$" + parm), total : { $sum : 1 } } },
 			]
 		}
 
+
 		return {
 			getUnique : getUniqueDocuments,
-			getUniqueCount : getUniqueCount
+			getUniqueCount : getUniqueCount,
 		}
 }

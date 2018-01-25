@@ -15,6 +15,7 @@ var cnst = require("../config");
 var mongConn = require('./connection');
 var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
+var aggr = require("../plugins/aggrigation")();
 
 var schema = new Schema({
     "name" : String, //Topic is the Courses topic in which questions will come up
@@ -71,6 +72,24 @@ schema.methods.findLatest = function () {
 schema.methods.getCount = function (course) {
     var newProm = utils.getpromise(), query = {"course" : course};
     this.model(collection).count(query, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.incrementCount = function (course) {
+    var newProm = utils.getpromise(), query = {"course" : course};
+    this.model(collection).findAndUpdate(query,{ $inc: { course: 1 }}, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.decrementCount = function (course) {
+    var newProm = utils.getpromise(), query = {"course" : course};
+    this.model(collection).findAndUpdate(query,{ $dec: { course: 1 }}, newProm.post);
+    return newProm.prom;
+};
+
+schema.methods.courseCounts = function () {
+    var newProm = utils.getpromise();
+    this.model(collection).aggregate(aggr.getUniqueCount("course")).exec(newProm.post);
     return newProm.prom;
 };
 

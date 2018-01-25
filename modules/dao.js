@@ -95,13 +95,15 @@ module.exports.courses = {
     getByCategory: function (category) {
         return courses.query.findAllbyCategory(category);
     },
-
     remove : function (code) {
         return courses.query.findAndRemove(code);
     },
     removeMany : function (code) {
         return courses.query.findAndRemoveMany(code);
     },
+    getTopicsCount : function () {
+      return topics.query.courseCounts()
+    }
 
 };
 
@@ -130,6 +132,9 @@ module.exports.topics = {
   removeMany : function (code) {
       return topics.query.findAndRemoveMany(code);
   },
+  getQuestionsCount : function (course) {
+    return questions.query.questionsCounts(course)
+  }
 }
 
 module.exports.questions = {

@@ -116,8 +116,13 @@ module.exports = function (dao, config) {
 					res.status(emsg.unauthorized.status).send(emsg.unauthorized);
 				} else if (generic.checkFields(params, "topic")) {
 					dao.questions.getAll(params.topic, params.page, params.count).
-					then(function (err, data) {
-						generic.gCall(err, data, res)
+					then(function (err, qData) {
+						var nData = qData;
+						if (qData.length == 0) {
+							nData = {all :  []}
+						}
+						nData.data = {role :  courseData.role || config.user};
+						generic.gCall(err, nData, res);
 					}).error(function (err) {
 						console.log(err);
 					});

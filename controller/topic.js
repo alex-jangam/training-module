@@ -2,7 +2,7 @@
 
 module.exports = function (app, dao, config) {
   var action = require("../modules/topic")(dao, config), auth = require("../auth/authorize").topic;
-  app.get("/topics", auth, action.verifyCourse, action.getAll);//?course=courseCode.
+  app.get("/topics", auth, action.verifyCourse, action.count, action.getAll);//?course=courseCode.
   app.post("/topic", auth, action.verifyAdminCourse, action.check, action.add);
   app.put("/topic/start", auth, action.verifyTopic, action.verifyCourse, action.startTopic);//?topic=code
   app.delete("/topic/reset", auth, action.remove);//{topic: code, name: username}

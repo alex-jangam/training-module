@@ -13,6 +13,7 @@ var cnst = require("../config");
 var mongConn = require('./connection');
 var mongooseClient = mongConn.mongooseClient;
 var Schema = mongConn.Schema;
+var aggr = require("../plugins/aggrigation")();
 
 var schema = new Schema({
     "question" : String,//Your question goes here
@@ -21,12 +22,13 @@ var schema = new Schema({
     "code" : String,//question code is auto generated
     // "submitted" : Boolean,//is Submitted state?
     "priority" : Number,//Order of questions
-    "guides" : [String]//Add related links
+    "guides" : [String],//Add related links
+    "snippets" : []
 }, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
 
 
 var collection = 'questions';
-var paginate = 10, defKeys = ["question", "code", "course", "topic", "guides", "created", "lastUpdated"],
+var paginate = 10, defKeys = ["question", "code", "course", "topic", "priority", "guides", "created", "lastUpdated"],
     sortItem = {item : "priority", order : 1};
 
 schema.methods.findByName = function (name) {
@@ -59,10 +61,15 @@ schema.methods.findAll = function (topic, page, count) {
         pagequery = utils.paginate(),
         aggList = pagequery.form(query, defKeys, page, parseInt(count, 10) || paginate, sortItem, newProm.post);
     this.model(collection).aggregate(aggList).exec(pagequery.post);
-    // this.model(collection).find({"account.name" : company}, newProm.post);
     return newProm.prom;
 };
 
+schema.methods.questionsCounts = function (course) {
+    var newProm = utils.getpromise(),
+    query = {course : course};
+    this.model(collection).aggregate(aggr.getUniqueCount("course", query)).exec(newProm.post);
+    return newProm.prom;
+};
 
 schema.methods.findAndRemove = function (questionCode) {
     var newProm = utils.getpromise();

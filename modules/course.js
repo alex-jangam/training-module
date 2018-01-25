@@ -46,18 +46,38 @@ module.exports = function (dao, config) {
 				}
 		}
 
+		function getCount(req, res, next) {
+				dao.courses.getTopicsCount().then(function (err, data) {
+					var list = data || [], counts = {};
+					for (var i = 0; i < list.length; i++) {
+						counts[list[i]._id] = list[i].total;
+					}
+					req.topicCount = counts;
+					next();
+				})
+		}
+
+		function processCountData(array, count) {
+			var nArr = array || [], nCount = count || {};
+			for (var i = 0; i < nArr.length; i++) {
+				nArr[i].count = nCount[nArr[i].code] || 0;
+			}
+		}
+
 		function getAll(req, res, next) {
 				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params;
 				if (generic.checkFields(params, "category")) {
 					if (isSuper) {
 						dao.courses.getByCategory(params.category).
 						then(function (err, data) {
+							processCountData(data, req.topicCount);
 							generic.gCall(err, data, res)
 						});
 					} else {
 						dao.courses.getAll(params.category, uName, params.page, params.count).
 						then(function (err, data) {
-							generic.gCall(err, data, res)
+							processCountData(data, req.topicCount);
+							generic.gCall(err, data, res);
 						});
 					}
 				} else {
@@ -71,15 +91,18 @@ module.exports = function (dao, config) {
 					uName = undefined;
 					dao.courses.getByCategory().
 					then(function (err, data) {
-						generic.gCall(err, data, res)
+						processCountData(data, req.topicCount);
+						generic.gCall(err, data, res);
 					});
 			} else {
 				dao.courses.getEnrolled(uName, params.page, params.count).
 				then(function (err, data) {
+					processCountData(data, req.topicCount);
 					generic.gCall(err, data, res)
 				});
 			}
 		}
+
 		//Approve is only for super admin.
 		function approve(req, res, next) {
 				var data = req.body, user = data.user, course = data.course;
@@ -177,6 +200,7 @@ module.exports = function (dao, config) {
 				registered : registered,
 				remove: remove,
 				removeMany: removeMany,
+				count : getCount,
 				enroll: enrollRequest,
 				enrolled: enrolledAll,
 				adminRequest : adminRequest
