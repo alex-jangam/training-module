@@ -25,6 +25,8 @@ import {HttpService} from './services/http/http.service'
 import {CategoryService} from './services/category/category.service'
 import {CoursesService} from 'app/services/courses/courses.service';
 import {SubCoursesService} from 'app/services/sub-courses/sub-courses.service';
+import {TopicService} from 'app/services/topic/topic.service';
+import {QuestionsService} from 'app/services/questions/questions.service';
 
 // Modules go to imports
 import {Routing} from './modules/route/route.module';
@@ -36,6 +38,7 @@ import { OverlayComponent } from './components/overlay/overlay.component';
 import { AddCourseComponent } from './modals/add-course/add-course.component';
 import { AddTopicComponent } from 'app/modals/add-topic/add-topic.component';
 import { RedirectComponent } from './components/redirect/redirect.component';
+import { AddQuestionComponent } from './modals/add-question/add-question.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,8 @@ import { RedirectComponent } from './components/redirect/redirect.component';
     OverlayComponent,
     AddCourseComponent,
     AddTopicComponent,
-    RedirectComponent
+    RedirectComponent,
+    AddQuestionComponent
   ],
   imports: [
     BrowserModule,
@@ -71,13 +75,16 @@ import { RedirectComponent } from './components/redirect/redirect.component';
     HttpService,
     CategoryService,
     CoursesService,
-    SubCoursesService
+    SubCoursesService,
+    TopicService,
+    QuestionsService
   ],
   bootstrap: [AppComponent],
   entryComponents: [
     AddCategoryComponent,
     AddCourseComponent,
-    AddTopicComponent
+    AddTopicComponent,
+    AddQuestionComponent
   ]
 })
 export class AppModule { }

@@ -1,3 +1,50 @@
-<p>
-  topic works!
-</p>
+<md-card class="topic-card">
+    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" *ngFor="let tile of tiles" >
+      <md-card class="no-side-pad cursor catogory-block no-top-pad" >
+        <md-card-header class="text-center lh-50" (click)="openCourse(tile.code)">
+          <md-card-title class="bold text-center col-sm-12 no-margin">{{tile.name}}</md-card-title>
+        </md-card-header>
+        <md-card-content class="top-line md-content-pad-top" >
+          <div class="" (click)="openCourse(tile.code)">
+            <div class="clr">
+              <div class="col-4 col-sm-4">
+                Questions
+              </div>
+              <div class="col-sm-8 col-8">
+                : {{tile.count || 0}}
+              </div>
+            </div>
+
+            <div class="clr">
+              <div class="col-4 col-sm-4">
+                Code
+              </div>
+              <div class="col-sm-8 col-8  dot-line">
+                : {{tile.code}}
+              </div>
+            </div>
+
+            <div class="clr">
+              <div class="col-4 col-sm-4">
+                Created
+              </div>
+              <div class="col-sm-8 col-8">
+                : {{tile.created | date:"MM-dd-yy" }}
+              </div>
+            </div>
+            <div class="htfix"> </div>
+          </div>
+          <div class="actions col-sm-12">
+            <button type="button" class="btn btn-success btn-sm cursor" name="button" (click)="startTopic(tile)">Start</button>
+          </div>
+          <div class="htfix"> </div>
+        </md-card-content>
+      </md-card>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" *ngIf="isAdmin">
+      <md-card class="cursor text-center" (click)="addQuestion()">
+        <md-icon class="mat-icon material-icons block-full" role="img" aria-hidden="true">add_box</md-icon>
+      </md-card>
+    </div>
+  <div class="htfix"> </div>
+</md-card>

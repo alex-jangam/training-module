@@ -1,0 +1,44 @@
+<h1 md-dialog-title>Add Question</h1>
+<div md-dialog-content class="form">
+  <div class="flex-w login-color">
+    <div class="icon-place">
+      <md-icon class="icon-lh">book</md-icon>
+    </div>
+    <md-input-container class="md-icon-float md-block flex-item ">
+      <input mdInput placeholder="Question" required name="title" [(ngModel)]="quest"/>
+    </md-input-container>
+  </div>
+
+  <div class="flex-w login-color" *ngFor="let snippet of snippets;let i = index;trackBy:trackByIndex">
+    <div class="icon-place">
+      <md-icon class="icon-lh">book</md-icon>
+    </div>
+    <md-input-container class="md-icon-float md-block flex-item ">
+      <textarea mdInput  placeholder="Question Snippet" required name="category" [(ngModel)]="snippets[i]"></textarea>
+    </md-input-container>
+  </div>
+
+  <div class="" *ngFor="let guide of guides;let i = index;">
+    <div class="icon-place">
+      <md-icon class="icon-lh">book</md-icon>
+    </div>
+    <md-input-container class="md-icon-float md-block flex-item ">
+      <input mdInput  placeholder="Document links" required name="category" [(ngModel)]="guides[i]"/>
+    </md-input-container>
+  </div>
+  <div class="">
+    <button class="btn btn-info btn-sm" (click)="addSnippet()">Add Snippet</button>
+    <button class="btn btn-info btn-sm" (click)="addGuide()">Add Guide</button>
+  </div>
+
+
+
+
+  <div class="cls">
+    {{error}}
+  </div>
+</div>
+<div md-dialog-actions class="text-center block">
+  <button md-button md-raised-button (click)="save()" class="btn btn-success">Save</button>&nbsp;
+  <button md-button md-dialog-close="" md-raised-button class="btn btn-default ">Close</button>
+</div>
