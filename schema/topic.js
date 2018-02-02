@@ -36,7 +36,7 @@ schema.index({ code : 1, user : 1}, { unique : true });
 
 var collection = 'topic',
     paginate = 10,
-    defKeys = ["name", "code", "course", "suffix", "count", "user", "approved", "submitted", "guides", "role",  "created", "lastUpdated"],
+    defKeys = ["name", "code", "course", "suffix", "count", "user", "approved", "submitted", "guides", "role", "status", "created", "lastUpdated"],
     sortItem = [{item : "user", order : 1}, {item : "count", order : 1}];
 
 schema.methods.findByName = function (name) {
@@ -77,13 +77,13 @@ schema.methods.getCount = function (course) {
 
 schema.methods.incrementCount = function (course) {
     var newProm = utils.getpromise(), query = {"course" : course};
-    this.model(collection).findAndUpdate(query,{ $inc: { course: 1 }}, newProm.post);
+    this.model(collection).update(query,{ $inc: { course: 1 }}, newProm.post);
     return newProm.prom;
 };
 
 schema.methods.decrementCount = function (course) {
     var newProm = utils.getpromise(), query = {"course" : course};
-    this.model(collection).findAndUpdate(query,{ $dec: { course: 1 }}, newProm.post);
+    this.model(collection).update(query,{ $dec: { course: 1 }}, newProm.post);
     return newProm.prom;
 };
 

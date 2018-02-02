@@ -31,9 +31,20 @@ module.exports = function () {
 			]
 		}
 
+		function getUniqueCountQuestions(filter) {
+			var nFilter = filter;
+			if (typeof nFilter != "object" || Array.isArray(nFilter)) {
+				nFilter = {};
+			}
+			return  [
+				{ $match : Object.assign({}, nFilter)},
+				{ $group : { _id : ("$topic"), total : { $sum : 1 } } },
+			]
+		}
 
 		return {
 			getUnique : getUniqueDocuments,
 			getUniqueCount : getUniqueCount,
+			getUniqueCountQ : getUniqueCountQuestions,
 		}
 }

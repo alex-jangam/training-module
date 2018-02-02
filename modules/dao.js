@@ -141,14 +141,20 @@ module.exports.questions = {
   getLast : function () {
       return questions.query.findLatest();
   },
-  add : function (question, topic, course, code, priority, guides) {
-    return questions.add(question, topic, course, code, priority, guides);
+  add : function (question, topic, course, code, priority, guides, snippets) {
+    return questions.add(question, topic, course, code, priority, guides, snippets);
   },
   getAll : function (topic, page, count) {
     return questions.query.findAll(topic, page, count);
   },
   remove : function (questionCode) {
     return questions.query.findAndRemove(questionCode);
+  },
+  removeCourse : function (course) {
+    return questions.query.findAndRemoveCourse(course);
+  },
+  removeTopic : function (topic) {
+    return questions.query.findAndRemoveTopic(topic);
   },
   /*/
   getName : function (name) {

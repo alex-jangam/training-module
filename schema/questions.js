@@ -28,7 +28,7 @@ var schema = new Schema({
 
 
 var collection = 'questions';
-var paginate = 10, defKeys = ["question", "code", "course", "topic", "priority", "guides", "created", "lastUpdated"],
+var paginate = 10, defKeys = ["question", "code", "course", "topic", "priority", "snippets", "guides", "created", "lastUpdated"],
     sortItem = {item : "priority", order : 1};
 
 schema.methods.findByName = function (name) {
@@ -67,7 +67,7 @@ schema.methods.findAll = function (topic, page, count) {
 schema.methods.questionsCounts = function (course) {
     var newProm = utils.getpromise(),
     query = {course : course};
-    this.model(collection).aggregate(aggr.getUniqueCount("course", query)).exec(newProm.post);
+    this.model(collection).aggregate(aggr.getUniqueCountQ("course", query)).exec(newProm.post);
     return newProm.prom;
 };
 
@@ -77,6 +77,16 @@ schema.methods.findAndRemove = function (questionCode) {
     return newProm.prom;
 };
 
+schema.methods.findAndRemoveCourse = function (courseCode) {
+    var newProm = utils.getpromise();
+    this.model(collection).update({course : courseCode}, {course: "", topic : ""}, {new: true}, newProm.post);
+    return newProm.prom;
+};
+schema.methods.findAndRemoveTopic = function (topicCode) {
+    var newProm = utils.getpromise();
+    this.model(collection).update({topic : topicCode}, {course: "", topic : ""}, {new: true}, newProm.post);
+    return newProm.prom;
+};
 schema.methods.updateOne = function (usr) {
     var newProm = utils.getpromise(),
         user = utils.clone(usr),
@@ -89,14 +99,15 @@ schema.methods.updateOne = function (usr) {
 var SchemaModel = mongooseClient.model(collection, schema);
 
 module.exports.query = new SchemaModel();// Export the whole 'schema' with all the methods
-module.exports.add = function (question, topic, course, code, priority, guides) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
+module.exports.add = function (question, topic, course, code, priority, guides, snippets) {// Export the save, which is separate from the search, as we need pass new obj to 'schema' constructor
     var newProm = utils.getpromise(), ObModel = {
         "question" : question,
         "topic" : topic,
         "course" : course,
         "code" : code,
         "priority" : priority || 0,
-        "guides" : guides || []
+        "guides" : guides || [],
+        "snippets" : snippets || []
     }, schemaSave = new SchemaModel(ObModel);
     schemaSave.save(newProm.post);
     return newProm.prom;

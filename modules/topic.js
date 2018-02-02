@@ -127,22 +127,24 @@ module.exports = function (dao, config) {
 					for (var i = 0; i < counts.length; i++) {
 						qCounts[counts[i]._id] = counts[i].total;
 					}
+					req.questionCount = qCounts;
 					next();
 				})
 		}
 
 		function getAll(req, res, next) {
-				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params, course = req.courseData || {};
+				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params, course = req.courseData || {}, qCount = req.questionCount;
 				if (isSuper) {
-					uName = "";
+					uName = "";course.role = config.admin;
 				}
 				if (generic.checkFields(params, "course")) {
 					dao.topics.getAll(params.course, uName, params.page, params.count).
 					then(function (err, data) {
-						var udata = {role :  course.role || config.user}, nData = data;
+						var udata = {role :  course.role || config.user, count : qCount}, nData = data;
 						if (data.length == 0) {
-							nData = {all :  []}
+							nData ={all :  []}
 						}
+
 						nData.data = udata;
 						generic.gCall(err, nData, res);
 					}).error(function (err) {
@@ -202,8 +204,10 @@ module.exports = function (dao, config) {
 		function removeMany(req, res, next) {
       var data = req.body;
       if (generic.checkFields(data, "topic")) {
-        dao.courses.removeMany(data.topic).then(function (err1, data1) {
+        dao.topics.removeMany(data.topic).then(function (err1, data1) {
           generic.gCall(err1, data1, res);
+        }).then(function (err1, data1) {
+					dao.questions.removeTopic(data.topic)
         });
       } else {
         res.status(emsg.invalidData.status).send(emsg.invalidData);

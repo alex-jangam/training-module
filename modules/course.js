@@ -139,7 +139,7 @@ module.exports = function (dao, config) {
       if (generic.checkFields(data, "course")) {
         dao.courses.removeMany(data.course).then(function (err1, data1) {
 					dao.topics.removeCourse(data.course).then(function (err2, data2) {
-						//dao.questions.removeCourse(data.course)
+						dao.questions.removeCourse(data.course)
 					})
         }).then(function (err1, data1) {
 					generic.gCall(err1, data1, res);

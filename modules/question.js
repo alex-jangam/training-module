@@ -97,7 +97,7 @@ module.exports = function (dao, config) {
 										num = parseInt(resp.code.split("-")[1], 10) + 1;
 									}
 									code = suffix + "-" + num;
-									dao.questions.add(data.question, topic.code, course.code, code, data.priority, data.guides).then(function (err2, resp2) {
+									dao.questions.add(data.question, topic.code, course.code, code, isNaN(data.priority)?0:data.priority, data.guides, data.snippets).then(function (err2, resp2) {
 										generic.gCall(err2, resp2, res);
 									});
 								}
@@ -108,7 +108,7 @@ module.exports = function (dao, config) {
 		}
 
 		function getAll(req, res, next) {
-				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params, topic = req.topicData, course = req.course, courseData = req.courseData;
+				var user = req.user, isSuper = (user.role === config.super), uName = user.username, params = req.params, topic = req.topicData, course = req.course, courseData = req.courseData, isSARole = isSuper?config.admin : false;
 				if (isSuper) {
 					uName = "";
 				}
@@ -121,7 +121,11 @@ module.exports = function (dao, config) {
 						if (qData.length == 0) {
 							nData = {all :  []}
 						}
-						nData.data = {role :  courseData.role || config.user};
+						nData.data = {
+							role :  isSARole || courseData.role || config.user,
+							topic : topic.code,
+							course : course
+						};
 						generic.gCall(err, nData, res);
 					}).error(function (err) {
 						console.log(err);

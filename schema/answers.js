@@ -19,7 +19,7 @@ var schema = new Schema({
     "submitted" : Boolean,//is Submitted state? It can be in saved or submitted.
     "user" : String,//User who submitted the answer
     "role" : String, //Role of user who submitted the answer.
-    "answer" : String,//Answer to the question goes here.
+    // "answer" : String,//Answer to the question goes here.
     "approved" : Boolean //Pending(submitted but yet to review) or accepted(Answer was accepted)
 }, {versionKey : false,  timestamps : { createdAt : 'created', updatedAt : 'lastUpdated'}});
 
