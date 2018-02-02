@@ -16,8 +16,12 @@ export class TopicComponent implements OnInit {
   courseId: any;
   tiles:any[] = [];
   questions:any[] = [];
+  question:any;
   isAdmin: any;
   isSuper: any;
+  qIndex:number = 0;
+  answers:any = {};
+
   constructor(private router: Router, private route: ActivatedRoute, public dialog: MdDialog, private lStore: LocalstoreService, private http : TopicService) { }
 
   ngOnInit() {
@@ -35,20 +39,24 @@ export class TopicComponent implements OnInit {
   }
 
   loadQuestions(result){
-    console.log(result, this.isSuper)
     this.isAdmin = (this.isSuper || (result.data && result.data.role == config.ADMIN));
-    this.questions = result.data;
+    this.questions = result.all;
+    this.courseId = result.data.course;
   }
 
+  selecteQ(q, i){
+    this.question = q;
+    this.qIndex = i+1;
+  }
 
   addQuestion(){
     let dialogRef = this.dialog.open(AddQuestionComponent,{
-      data: {course: this.courseId},
-      width: '450px'});
+      data: {course: this.courseId, topic : this.topicId},
+      width: '800px'});
     dialogRef.afterClosed().subscribe(result => {
       if(result){
         result.created = new Date(result.created);
-        this.tiles.push(result);
+        this.questions.push(result);
       }
     });
   }

@@ -1,14 +1,14 @@
 .topic-card{
 	height: calc(100% - 49px);
+	overflow: auto;
+	min-height: 420px;
 }
 .md-content-pad-top{
     padding-top: 10px;
 }
-
-.catogory-block{
-		margin-bottom: 10px;
+.md-content-nopad{
+    padding-top: 0px;
 }
-
 .block-full{
 	font-size: 92px;
 	text-align: center;
@@ -17,4 +17,46 @@
 	background: #d4d4d4;
 	width: 100%;
 	height: 100%;
+}
+
+.question-block{
+	padding: 0px;
+	line-height: 40px;
+}
+.add-question{
+	padding: 0;
+	height: 40px;
+	.add-q-icon{
+		font-size: 40px
+	}
+}
+
+.main-question{
+	padding-top: 30px;
+	.topic-block{
+		margin-bottom: 10px;
+	}
+	.q-label{
+		padding: 0 15px;
+		width: 80px;
+	}
+	.a-label{
+		padding: 0 15px;
+	}
+	.q-content{
+		padding: 0 15px;
+	}
+	.q-guide{
+		margin: 0 3px;
+	}
+	.q-guide:after{
+		content: ", "
+	}
+	.q-guide:last-child:after{
+		content: ""
+	}
+	.q-snippet{
+		padding: 5px;
+		border: 1px solid #d4d4d4;
+	}
 }

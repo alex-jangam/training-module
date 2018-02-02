@@ -32,8 +32,12 @@ export class SubCourseComponent implements OnInit {
   }
 
   listCourses(result){
-    let resp = (result || {}), data = resp.data || {};
+    let resp = (result || {}), data = resp.data || {count: {}};
     this.tiles = resp.all || [];
+    console.log(data)
+    this.tiles.forEach((v,i) => {
+      v.count = data.count[v.code] || 0;
+    })
     this.isAdmin = (this.isSuper || (data.role == config.ADMIN));
   }
 

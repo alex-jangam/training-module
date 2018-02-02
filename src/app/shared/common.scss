@@ -409,7 +409,22 @@ button.btn.white {
 .pull-left-not-lg {
     float: left;
 }
-
+.item-default {
+  .show-last{
+    display: none;
+  }
+}
+.item-last {
+  .hide-last{
+    display: none;
+  }
+}
+.gap{
+  height: 10px;
+}
+.dotted{
+  border-bottom: 1px dotted;
+}
 @media (max-width: 767px) {
     .pull-right-not-xs,
     .pull-left-not-xs {

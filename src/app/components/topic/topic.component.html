@@ -1,50 +1,72 @@
 <md-card class="topic-card">
-    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" *ngFor="let tile of tiles" >
-      <md-card class="no-side-pad cursor catogory-block no-top-pad" >
-        <md-card-header class="text-center lh-50" (click)="openCourse(tile.code)">
-          <md-card-title class="bold text-center col-sm-12 no-margin">{{tile.name}}</md-card-title>
-        </md-card-header>
-        <md-card-content class="top-line md-content-pad-top" >
-          <div class="" (click)="openCourse(tile.code)">
-            <div class="clr">
-              <div class="col-4 col-sm-4">
-                Questions
-              </div>
-              <div class="col-sm-8 col-8">
-                : {{tile.count || 0}}
-              </div>
-            </div>
-
-            <div class="clr">
-              <div class="col-4 col-sm-4">
-                Code
-              </div>
-              <div class="col-sm-8 col-8  dot-line">
-                : {{tile.code}}
-              </div>
-            </div>
-
-            <div class="clr">
-              <div class="col-4 col-sm-4">
-                Created
-              </div>
-              <div class="col-sm-8 col-8">
-                : {{tile.created | date:"MM-dd-yy" }}
-              </div>
-            </div>
-            <div class="htfix"> </div>
-          </div>
-          <div class="actions col-sm-12">
-            <button type="button" class="btn btn-success btn-sm cursor" name="button" (click)="startTopic(tile)">Start</button>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" *ngFor="let tile of questions;let ind = index">
+      <md-card class="no-side-pad question-block no-top-pad cursor" (click)="selecteQ(tile, ind)">
+        <md-card-content class="md-content-nopad" >
+          <div class="col-sm-12 ">
+            Question({{ind + 1}})
           </div>
           <div class="htfix"> </div>
         </md-card-content>
       </md-card>
     </div>
     <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" *ngIf="isAdmin">
-      <md-card class="cursor text-center" (click)="addQuestion()">
-        <md-icon class="mat-icon material-icons block-full" role="img" aria-hidden="true">add_box</md-icon>
+      <md-card class="cursor text-center add-question" (click)="addQuestion()">
+        <md-icon class="add-q-icon mat-icon material-icons block-full" role="img" aria-hidden="true">add_box</md-icon>
       </md-card>
     </div>
+    <!-- <div class="col-sm-12" *ngFor="let question of questions;let ind = index" > -->
+
+    <div class="col-sm-12 main-question" *ngIf="question" >
+      <md-card class="no-side-pad topic-block no-top-pad" >
+        <md-card-header class="text-center lh-50" >
+          <md-card-title class="bold text-center col-sm-12 no-margin">{{question.name}}</md-card-title>
+        </md-card-header>
+        <md-card-content class="md-content-pad-top" >
+          <div class="" >
+            <div class="clr">
+              <div class="q-label fl">
+                Question({{qIndex}})
+              </div>
+              <div class="q-content fl">
+                :  {{question.question}}
+              </div>
+            </div>
+
+            <div class="clr" *ngIf="question.guides.length">
+              <div class="q-label fl">
+                Guides
+              </div>
+              <div class="q-content fl">
+                <span class="fl">: </span><a class="q-guide fl" *ngFor="let link of question.guides" [href]="link">{{link}}</a>
+              </div>
+            </div>
+
+            <div class="clr" *ngIf="question.snippets.length">
+              <div class="q-label">
+                Snippets
+              </div>
+              <div class="q-content ">
+                <div class="q-snippet" *ngFor="let snip of question.snippets">
+                  {{snip}}
+                </div>
+              </div>
+            </div>
+
+            <div class="clr">
+              <div class="a-label long">
+                Answer to the above question in provider section.
+              </div>
+              <div class="q-content ">
+                <textarea class="w100" [(ngModel)]="answers[question.code]"></textarea>
+              </div>
+            </div>
+
+            <div class="htfix"> </div>
+          </div>
+          <div class="htfix"> </div>
+        </md-card-content>
+      </md-card>
+    </div>
+
   <div class="htfix"> </div>
 </md-card>

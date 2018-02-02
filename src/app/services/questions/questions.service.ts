@@ -14,8 +14,8 @@ export class QuestionsService extends HttpService{
     super(http, ls, router, overlay, loginchange);
   }
 
-  addQuestion(question : Question){
-      return this.httpGet(this.base + "/questions", this.accessHeader, question);
+  addQuestion(question : Question){//url, body, headers, params
+      return this.httpPost(this.base + "/question", question, this.accessHeader, {});
   }
 
 }
